@@ -1,4 +1,4 @@
-package TheGamePackage.Interface;
+package thegamepackage.ui;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -28,7 +28,7 @@ public class GameTimer {
     {
         Integer sec = time % 60;
         if(sec<10)
-            return "0"+sec.toString();
+            return "0"+sec;
         return sec.toString();
     }
 
@@ -49,12 +49,12 @@ public class GameTimer {
                             timeRemaining1--;
 
                         if ((timeRemaining2 == 0 || timeRemaining1 == 0)) {
+                            timer.cancel();
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
                             alert.setTitle("Hello :/");
                             alert.setHeaderText(null);
                             alert.setContentText("GameTimer up");
-                            alert.show();
-                            timer.cancel();
+                            alert.showAndWait();
                         }
                     }
                 });

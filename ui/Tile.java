@@ -1,6 +1,6 @@
-package TheGamePackage.Interface;
+package thegamepackage.ui;
 
-import TheGamePackage.Creatures.Monster;
+import thegamepackage.creatures.Monster;
 import javafx.scene.layout.*;
 
 /**

@@ -1,6 +1,6 @@
-package TheGamePackage.Creatures;
+package thegamepackage.creatures;
 
-import TheGamePackage.Interface.Player;
+import thegamepackage.ui.Player;
 import javafx.scene.image.ImageView;
 
 /**

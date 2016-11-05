@@ -1,4 +1,4 @@
-package TheGamePackage.Interface;
+package thegamepackage.ui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

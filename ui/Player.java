@@ -1,4 +1,4 @@
-package TheGamePackage.Interface;
+package thegamepackage.ui;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.

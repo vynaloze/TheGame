@@ -1,6 +1,6 @@
-package TheGamePackage.Interface;
+package thegamepackage.ui;
 
-import TheGamePackage.Creatures.Monster;
+import thegamepackage.creatures.Monster;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -132,6 +132,7 @@ public class TheGame extends Application {
                 i++;
             }
         }
+
         tiles[6][0].setMonster(Monster.spawnNewMonster(alreadySpawned[0], p1));
         tiles[7][0].setMonster(Monster.spawnNewMonster(alreadySpawned[1], p1));
         tiles[7][1].setMonster(Monster.spawnNewMonster(alreadySpawned[2], p1));
@@ -510,7 +511,8 @@ public class TheGame extends Application {
                     && currentlyActivePlayer.canMove()
                     && tile.isOccupied() == false
                     && abs(tile.getX() - previouslyClickedTile.getX()) + abs(tile.getY() - previouslyClickedTile.getY()) <= previouslyClickedTile.getMonster().getSpeed()
-                    && advancedCheck(x, y)) {
+                    && advancedCheck(x, y))
+            {
                 tile.setMonster(previouslyClickedTile.getMonster());
                 previouslyClickedTile.removeMonster();
                 currentlyActivePlayer.setMoveValue(false);

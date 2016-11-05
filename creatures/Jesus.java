@@ -1,6 +1,6 @@
-package TheGamePackage.Creatures;
+package thegamepackage.creatures;
 
-import TheGamePackage.Interface.Player;
+import thegamepackage.ui.Player;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -12,7 +12,7 @@ public class Jesus extends Monster {
     public Jesus (Player player){
         id = 6;
         this.player = player;
-        pic = new ImageView(new Image(getClass().getResourceAsStream("obiwan.jpg"),98, 98, true,true));
+        pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("obiwan.jpg"),98, 98, true,true));
     }
 
 

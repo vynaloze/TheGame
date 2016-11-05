@@ -1,6 +1,6 @@
-package TheGamePackage.Creatures;
+package thegamepackage.creatures;
 
-import TheGamePackage.Interface.Player;
+import thegamepackage.ui.Player;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -12,7 +12,7 @@ public class BenedictXVI extends Monster {
     public BenedictXVI (Player player){
         id = 2;
         this.player = player;
-        pic = new ImageView(new Image(getClass().getResourceAsStream("benedict.jpg"),98, 98, true,true));
+        pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("benedict.jpg"),98, 98, true,true));
     }
 
 

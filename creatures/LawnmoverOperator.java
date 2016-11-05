@@ -1,6 +1,6 @@
-package TheGamePackage.Creatures;
+package thegamepackage.creatures;
 
-import TheGamePackage.Interface.Player;
+import thegamepackage.ui.Player;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -12,7 +12,7 @@ public class LawnmoverOperator extends Monster {
     public LawnmoverOperator (Player player){
         id = 5;
         this.player = player;
-        pic = new ImageView(new Image(getClass().getResourceAsStream("lawnmover.jpg"),98, 98, true,true));
+        pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("lawnmover.jpg"),98, 98, true,true));
     }
 
 
