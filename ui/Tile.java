@@ -1,5 +1,8 @@
 package thegamepackage.ui;
 
+import javafx.geometry.Pos;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import thegamepackage.creatures.Monster;
 import javafx.scene.layout.*;
 
@@ -13,17 +16,16 @@ public class Tile {
     private boolean occupied = false;
     private Monster monster = null;
     private boolean selected = false;
-
-    private Pane square = new Pane();
+    private StackPane square = new StackPane();
 
     public Tile(int row, int column) {
         this.column = column;
         this.row = row;
-        makeWhiteOrBlack(square);
-
+        this.makeWhiteOrBlack(square);
+        this.square.setAlignment(Pos.CENTER);
     }
 
-    private void makeWhiteOrBlack(Pane square) {
+    private void makeWhiteOrBlack(StackPane square) {
         String color;
         if ((row + column) % 2 == 0) {
             color = "white";
@@ -34,30 +36,35 @@ public class Tile {
     }
 
     public void changeStoneValue() {
-
+        String color;
+        if ((row + column) % 2 == 0) {
+            color = "white";
+        } else {
+            color = "black";
+        }
         if (occupied) {
             occupied = false;
-            this.makeWhiteOrBlack(square);
+            square.getChildren().clear();
         } else {
             occupied = true;
-            square.setStyle("-fx-background-color: blue;");
+            square.getChildren().add(new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("stone-" + color + ".jpg"), 98, 98, true, true)));
         }
     }
 
-    public Pane getSquare() {
+    public StackPane getSquare() {
         return square;
     }
 
-    public void setMonster(Monster m)
-    {
+    public void setMonster(Monster m) {
         monster = m;
         occupied = true;
+        highlight(monster.getPlayer().getColor());
         square.getChildren().add(monster.getPic());
     }
 
-    public void removeMonster()
-    {
-       square.getChildren().remove(monster.getPic());
+    public void removeMonster() {
+        square.getChildren().remove(monster.getPic());
+        removeHighlight();
         occupied = false;
         monster = null;
     }
@@ -70,31 +77,38 @@ public class Tile {
         return occupied;
     }
 
-    public int getX()
-    {
+    public int getX() {
         return column;
     }
-    public int getY()
-    {
+
+    public int getY() {
         return row;
     }
 
-   public void select()     //todo: change this
+    public void select()     //todo: change this
     {
-        square.setBorder(new Border(new BorderStroke(javafx.scene.paint.Paint.valueOf("red"),
-                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         selected = true;
     }
 
-    public void deselect()
-    {
-        square.setBorder(null);
+    public void deselect() {
         selected = false;
     }
 
-    public boolean isSelected()
-    {
+    public boolean isSelected() {
         return selected;
     }
+
+    public void highlight(String color)
+    {
+        square.setBorder(new Border(new BorderStroke(javafx.scene.paint.Paint.valueOf(color),
+                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(3))));
+    }
+
+    public void removeHighlight()
+    {
+        square.setBorder(null);
+    }
+
+
 
 }

@@ -9,18 +9,18 @@ import javafx.scene.image.ImageView;
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
-public class BenedictXVI extends Monster {
+public class Cobra extends Monster {
 
-    public BenedictXVI (Player player){
-        this.id = ID.BENEDICT_XVI;
+    public Cobra(Player player) {
+        this.id = ID.COBRA;
         this.player = player;
-        this.speed = 1;
-        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("benedict.jpg")));
+        this.speed = 3;
+        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("cobra.png")));
 
-        this.attackedTiles.add(new Coordinates(-1, -1));
-        this.attackedTiles.add(new Coordinates(1, -1));
         this.attackedTiles.add(new Coordinates(0, -1));
         this.attackedTiles.add(new Coordinates(0, -2));
+        this.attackedTiles.add(new Coordinates(0, -3));
+        this.attackedTiles.add(new Coordinates(1, -2));
+        this.attackedTiles.add(new Coordinates(-1, -2));
     }
-
 }

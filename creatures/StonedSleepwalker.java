@@ -1,5 +1,7 @@
 package thegamepackage.creatures;
 
+import thegamepackage.ui.Coordinates;
+import thegamepackage.ui.ID;
 import thegamepackage.ui.Player;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,13 +13,14 @@ import thegamepackage.ui.TheGame;
 public class StonedSleepwalker extends Monster {
 
     public StonedSleepwalker(Player player) {
-        id = 1;
+        this.id = ID.STONED_SLEEPWALKER;
         this.player = player;
-        pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("sleepwalker.jpg"), 98, 98, true, true));
+        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("sleepwalker.jpg")));
+
+        this.attackedTiles.add(new Coordinates(0, -1));
+        this.attackedTiles.add(new Coordinates(0, -2));
+        this.attackedTiles.add(new Coordinates(0, -3));
     }
 
-    @Override
-    public void attack() {
 
-    }
 }

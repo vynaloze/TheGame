@@ -9,20 +9,23 @@ import javafx.scene.image.ImageView;
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
-public class AndrzejDuda extends Monster {
+public class Juggernaut extends Monster {
 
-    public AndrzejDuda(Player player) {
-        this.id = ID.ANDRZEJ_DUDA;
+    public Juggernaut(Player player) {
+        this.id = ID.JUGGERNAUT;
         this.player = player;
-        this.speed = 2;
-        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("andrzej.jpg")));
+        this.speed = 1;
+        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("juggernaut.png")));
 
-        this.attackedTiles.add(new Coordinates(-1, 0));
-        this.attackedTiles.add(new Coordinates(1, 0));
         this.attackedTiles.add(new Coordinates(-1, -1));
         this.attackedTiles.add(new Coordinates(1, -1));
         this.attackedTiles.add(new Coordinates(0, -1));
+        this.attackedTiles.add(new Coordinates(-1, -2));
+        this.attackedTiles.add(new Coordinates(1, -2));
         this.attackedTiles.add(new Coordinates(0, -2));
+        this.attackedTiles.add(new Coordinates(-1, -3));
+        this.attackedTiles.add(new Coordinates(1, -3));
+        this.attackedTiles.add(new Coordinates(0, -3));
     }
 
 }

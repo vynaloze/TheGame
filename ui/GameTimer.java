@@ -13,67 +13,81 @@ import java.util.TimerTask;
 public class GameTimer {
     private Timer timer = new Timer();
     private Label label;
-    private int timeRemaining1, timeRemaining2;
+    private int timeRemaining1, timeRemaining2, timeAdded;
     private boolean pause1 = false;
     private boolean pause2 = true;
+    private String p1, p2;
 
 
-    public GameTimer(Label label, int minutes) {
-        timeRemaining1 = minutes * 60;
-        timeRemaining2 = minutes * 60;
+    public GameTimer(Label label, int minutesOfGame, int secondsAddedEveryTurn, String p1, String p2) {
+        this.timeRemaining1 = minutesOfGame * 60;
+        this.timeRemaining2 = minutesOfGame * 60;
+        this.timeAdded = secondsAddedEveryTurn;
         this.label = label;
+        this.p1 = p1;
+        this.p2 = p2;
     }
 
-    private String sec (int time)
-    {
+    private String sec(int time) {
         Integer sec = time % 60;
-        if(sec<10)
-            return "0"+sec;
+        if (sec < 10)
+            return "0" + sec;
         return sec.toString();
     }
 
     public void start() {
-
-        timer.scheduleAtFixedRate(new TimerTask() {
-                                                        //TODO: it's awful piece of code, needs rewriting (swamps the event queue with millions of little Runnables)
+        Runnable runnable = new UpdateAndCheckForWinner();
+        TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        label.setText(timeRemaining1 / 60 + ":" + sec(timeRemaining1) + "  -  " + timeRemaining2 / 60 + ":" + sec(timeRemaining2));
-
-                        if (!pause2 && timeRemaining2 > 0)
-                            timeRemaining2--;
-                        if ((!pause1 && timeRemaining1 > 0))
-                            timeRemaining1--;
-
-                        if ((timeRemaining2 == 0 || timeRemaining1 == 0)) {
-                            timer.cancel();
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                            alert.setTitle("Hello :/");
-                            alert.setHeaderText(null);
-                            alert.setContentText("GameTimer up");
-                            alert.showAndWait();
-                        }
-                    }
-                });
+                Platform.runLater(runnable);
             }
-        }, 0, 1000);
+        };
+
+        timer.scheduleAtFixedRate(timerTask, 0, 1000);
     }
 
     public void changePlayer() {
         if (!pause2)
-            timeRemaining2 += 10;
+            timeRemaining2 += timeAdded;
         if (!pause1)
-            timeRemaining1 += 10;
+            timeRemaining1 += timeAdded;
 
         pause1 = !pause1;
         pause2 = !pause2;
     }
 
-    public void stop()
-    {
+    public void stop() {
         timer.cancel();
+    }
+
+    private class UpdateAndCheckForWinner implements Runnable {
+
+        @Override
+        public void run() {
+            label.setText(timeRemaining1 / 60 + ":" + sec(timeRemaining1) + "  -  " + timeRemaining2 / 60 + ":" + sec(timeRemaining2));
+
+            if (!pause2 && timeRemaining2 > 0)
+                timeRemaining2--;
+            if ((!pause1 && timeRemaining1 > 0))
+                timeRemaining1--;
+
+            if ((timeRemaining2 == 0 || timeRemaining1 == 0)) {
+                timer.cancel();
+                announceWinner();
+            }
+        }
+
+        private void announceWinner() {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("The End");
+            alert.setHeaderText("GG WP");
+            if (timeRemaining1 == 0) {
+                alert.setContentText("I am proud to announce that our fellow player, " + p2 + " has won this match because of his fast clicks.");
+            } else {
+                alert.setContentText("I am proud to announce that our fellow player, " + p1 + " has won this match because of his fast clicks.");
+            }
+            alert.showAndWait();
+        }
     }
 }

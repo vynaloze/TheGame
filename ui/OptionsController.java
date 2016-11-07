@@ -14,7 +14,7 @@ public class OptionsController {
     @FXML
     private Button submit;
     @FXML
-    private TextField stones, player1, player2, time;
+    private TextField stones, player1, player2, time, time_added;
 
 
     @FXML
@@ -27,9 +27,9 @@ public class OptionsController {
     }
 
     private void writeProperties() {
-        String howManyStones, nameOfPlayer1, nameOfPlayer2, timeSet;
+        String howManyStones, nameOfPlayer1, nameOfPlayer2, timeSet, timeAdd;
 
-        if (stones.getText().isEmpty() || Integer.parseInt(stones.getText())>58)
+        if (stones.getText().isEmpty() || Integer.parseInt(stones.getText()) > 58)
             howManyStones = "8";
         else
             howManyStones = stones.getText();
@@ -49,12 +49,18 @@ public class OptionsController {
         else
             timeSet = time.getText();
 
+        if (time_added.getText().isEmpty())
+            timeAdd = "10";
+        else
+            timeAdd = time_added.getText();
+
         try {
             Properties properties = new Properties();
             properties.setProperty("stones", howManyStones);
             properties.setProperty("player1", nameOfPlayer1);
             properties.setProperty("player2", nameOfPlayer2);
             properties.setProperty("time", timeSet);
+            properties.setProperty("time_added", timeAdd);
 
             File file = new File("game.properties");
             FileOutputStream fileOut = new FileOutputStream(file);

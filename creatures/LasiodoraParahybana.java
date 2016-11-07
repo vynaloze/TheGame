@@ -9,13 +9,13 @@ import javafx.scene.image.ImageView;
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
-public class LawnmoverOperator extends Monster {
+public class LasiodoraParahybana extends Monster {
 
-    public LawnmoverOperator(Player player) {
-        this.id = ID.LAWNMOVER_OPERATOR;
+    public LasiodoraParahybana(Player player) {
+        this.id = ID.LASIODORA_PARAHYBANA;
         this.player = player;
-        this.speed = 2;
-        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("lawnmover.jpg")));
+        this.speed = 3;
+        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("lasiodora.png")));
 
         this.attackedTiles.add(new Coordinates(-1, -1));
         this.attackedTiles.add(new Coordinates(1, -1));
@@ -27,4 +27,3 @@ public class LawnmoverOperator extends Monster {
         this.attackedTiles.add(new Coordinates(0, 1));
     }
 }
-

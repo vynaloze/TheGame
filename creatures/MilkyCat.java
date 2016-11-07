@@ -9,16 +9,14 @@ import javafx.scene.image.ImageView;
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
-public class AndrzejDuda extends Monster {
+public class MilkyCat extends Monster {
 
-    public AndrzejDuda(Player player) {
-        this.id = ID.ANDRZEJ_DUDA;
+    public MilkyCat (Player player){
+        this.id = ID.MILKY_CAT;
         this.player = player;
-        this.speed = 2;
-        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("andrzej.jpg")));
+        this.speed = 3;
+        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("milky_cat.png")));
 
-        this.attackedTiles.add(new Coordinates(-1, 0));
-        this.attackedTiles.add(new Coordinates(1, 0));
         this.attackedTiles.add(new Coordinates(-1, -1));
         this.attackedTiles.add(new Coordinates(1, -1));
         this.attackedTiles.add(new Coordinates(0, -1));

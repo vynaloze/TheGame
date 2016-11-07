@@ -9,18 +9,15 @@ import javafx.scene.image.ImageView;
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
-public class BenedictXVI extends Monster {
+public class FluffyUnicorn extends Monster {
 
-    public BenedictXVI (Player player){
-        this.id = ID.BENEDICT_XVI;
+    public FluffyUnicorn(Player player) {
+        this.id = ID.FLUFFY_UNICORN;
         this.player = player;
-        this.speed = 1;
-        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("benedict.jpg")));
+        this.speed = 3;
+        this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("unicorn.png")));
 
-        this.attackedTiles.add(new Coordinates(-1, -1));
-        this.attackedTiles.add(new Coordinates(1, -1));
         this.attackedTiles.add(new Coordinates(0, -1));
         this.attackedTiles.add(new Coordinates(0, -2));
     }
-
 }

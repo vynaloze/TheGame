@@ -5,61 +5,50 @@ package thegamepackage.ui;
  */
 public class Player {
     private String name;
-    private int mana=0;
-    private boolean canMove=true;
-    private boolean canAttackOrSpell=true;
+    private String color;
+    private int mana = 0;
+    private int monstersAlive = 3;
+    private boolean canMove = true;
 
-
-  //  public Player(String name)
-    {
-        this.name = name;
-    }
-
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String s)
-    {
+    public void setName(String s) {
         this.name = s;
     }
 
-    public boolean canMove()
-    {
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String s) {
+        this.color = s;
+    }
+
+    public boolean canMove() {
         return canMove;
     }
 
-    public boolean canAttackOrSpell()
-    {
-        return canAttackOrSpell;
-    }
-
-    public void setMoveValue(boolean value)
-    {
+    public void setMoveValue(boolean value) {
         canMove = value;
     }
 
-    public void setAttackOrSpellValue(boolean value)
-    {
-            canAttackOrSpell = value;
-    }
-
-    public void modifyManaValue(int value)
-    {
+    public void modifyManaValue(int value) {
         mana += value;
     }
 
-    public int getMana()
-    {
+    public int getMana() {
         return mana;
     }
 
+    public int getMonstersAlive() {
+        return monstersAlive;
+    }
 
-
-
-
-
+    public void modifyMonstersAliveValue(int value) {
+        monstersAlive += value;
+    }
 
 
 }
