@@ -361,9 +361,11 @@ public class TheGame extends Application {
 
     private void readAndApplyProperties() {
         try {
+
             File file = new File("game.properties");
             FileInputStream fileIn = new FileInputStream(file);
             Properties properties = new Properties();
+           // properties.load(getClass().getClassLoader().getResourceAsStream("game.properties"));
             properties.load(fileIn);
             fileIn.close();
 
@@ -374,7 +376,12 @@ public class TheGame extends Application {
             timeAdded = Integer.parseInt(properties.getProperty("time_added"));
 
         } catch (IOException x) {
-            x.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Hello :/");
+            alert.setHeaderText(null);
+            alert.setContentText(x.getMessage());
+            alert.showAndWait();
+           // x.printStackTrace();
         }
 
     }
@@ -615,18 +622,22 @@ public class TheGame extends Application {
     private void openAttackAndRotationMenu(int x, int y, MouseEvent e) {
         Tile tile = tiles[y][x];
         Monster m = tile.getMonster();
-        if (m != null && m.getPlayer() == currentlyActivePlayer) {
+
+        if (m != null) {
             ContextMenu cm = new ContextMenu();
             MenuItem shortInfo = new MenuItem(m.getId().toString() + "  speed: " + m.getSpeed());
-            MenuItem menuAttack = new MenuItem("Attack");
-            MenuItem menuRotateR = new MenuItem("Rotate to the right", new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("rotate-right.png"))));
-            MenuItem menuRotateL = new MenuItem("Rotate to the left", new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("rotate-left.png"))));
+            cm.getItems().add(shortInfo);
 
-            menuAttack.setOnAction(event -> performAttack(tile));
-            menuRotateR.setOnAction(event -> m.rotate(90));
-            menuRotateL.setOnAction(event -> m.rotate(-90));
+            if (m.getPlayer() == currentlyActivePlayer) {
+                MenuItem menuAttack = new MenuItem("Attack");
+                MenuItem menuRotateR = new MenuItem("Rotate to the right", new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("rotate-right.png"))));
+                MenuItem menuRotateL = new MenuItem("Rotate to the left", new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("rotate-left.png"))));
+                menuAttack.setOnAction(event -> performAttack(tile));
+                menuRotateR.setOnAction(event -> m.rotate(90));
+                menuRotateL.setOnAction(event -> m.rotate(-90));
+                cm.getItems().addAll(menuAttack, menuRotateR, menuRotateL);
+            }
 
-            cm.getItems().addAll(shortInfo, menuAttack, menuRotateR, menuRotateL);
             cm.show(tile.getSquare(), e.getScreenX(), e.getScreenY());
         }
     }
