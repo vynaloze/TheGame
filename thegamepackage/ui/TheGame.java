@@ -15,12 +15,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import thegamepackage.creatures.Monster;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
@@ -56,7 +58,6 @@ public class TheGame extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         primaryStage.setTitle("THE GAME");
         primaryStage.setMinHeight(HEIGHT);
         primaryStage.setMinWidth(WIDTH);
@@ -76,17 +77,19 @@ public class TheGame extends Application {
 
         primaryStage.setScene(new Scene(root, WIDTH, HEIGHT));
         primaryStage.show();
+
+        primaryStage.setOnCloseRequest(e -> timer.stop());
     }
 
 
     //methods to draw a board
     private void drawBoard(VBox vbox) {
-        createNewBoard(vbox);
-        spawnMonsters(vbox);
+        createNewBoard();
+        spawnMonsters();
         createGUI(vbox);
     }
 
-    private void createNewBoard(VBox vbox) {
+    private void createNewBoard() {
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles.length; j++) {
                 tiles[i][j] = new Tile(i, j);
@@ -132,7 +135,7 @@ public class TheGame extends Application {
         }
     }
 
-    private void spawnMonsters(VBox vbox) {
+    private void spawnMonsters() {
         final int NUMBER_OF_MONSTERS = ID.values().length;
         ID[] alreadySpawned = new ID[NUMBER_OF_MONSTERS];
 
@@ -151,13 +154,17 @@ public class TheGame extends Application {
                 i++;
             }
         }
-
+        //just spawn the lower monsters
         tiles[6][0].setMonster(Monster.spawnNewMonster(alreadySpawned[0], p1));
         tiles[7][0].setMonster(Monster.spawnNewMonster(alreadySpawned[1], p1));
         tiles[7][1].setMonster(Monster.spawnNewMonster(alreadySpawned[2], p1));
+        //spawn & rotate 180 degrees the upper monsters
         tiles[0][6].setMonster(Monster.spawnNewMonster(alreadySpawned[3], p2));
+        tiles[0][6].getMonster().rotate(180);
         tiles[0][7].setMonster(Monster.spawnNewMonster(alreadySpawned[4], p2));
+        tiles[0][7].getMonster().rotate(180);
         tiles[1][7].setMonster(Monster.spawnNewMonster(alreadySpawned[5], p2));
+        tiles[1][7].getMonster().rotate(180);
     }
 
     private void createGUI(VBox vbox) {
@@ -177,7 +184,7 @@ public class TheGame extends Application {
             int x = (int) e.getX() / 106;
             int y = (int) e.getY() / 106;
             if (e.getButton() == MouseButton.SECONDARY) {
-                openAttackAndRotationMenu(x, y, e);
+                openActionsMenu(x, y, e);
             } else {
                 highlightAttackedTiles(x, y);
                 performProperMovementAction(x, y);
@@ -365,7 +372,6 @@ public class TheGame extends Application {
             File file = new File("game.properties");
             FileInputStream fileIn = new FileInputStream(file);
             Properties properties = new Properties();
-           // properties.load(getClass().getClassLoader().getResourceAsStream("game.properties"));
             properties.load(fileIn);
             fileIn.close();
 
@@ -375,13 +381,14 @@ public class TheGame extends Application {
             time = Integer.parseInt(properties.getProperty("time"));
             timeAdded = Integer.parseInt(properties.getProperty("time_added"));
 
+        } catch (FileNotFoundException x) {
+            howManyStones = 8;
+            p1.setName("P13RV52Y");
+            p2.setName("DRU61");
+            time = 3;
+            timeAdded = 10;
         } catch (IOException x) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Hello :/");
-            alert.setHeaderText(null);
-            alert.setContentText(x.getMessage());
-            alert.showAndWait();
-           // x.printStackTrace();
+            x.printStackTrace();
         }
 
     }
@@ -619,13 +626,14 @@ public class TheGame extends Application {
 
 
     //methods to handle attack, rotation & skills usage
-    private void openAttackAndRotationMenu(int x, int y, MouseEvent e) {
+    private void openActionsMenu(int x, int y, MouseEvent e) {
         Tile tile = tiles[y][x];
         Monster m = tile.getMonster();
+        Skills skills = new Skills(tiles, tile);
 
         if (m != null) {
             ContextMenu cm = new ContextMenu();
-            MenuItem shortInfo = new MenuItem(m.getId().toString() + "  speed: " + m.getSpeed());
+            MenuItem shortInfo = new MenuItem(m.getId() + "  speed: " + m.getSpeed());
             cm.getItems().add(shortInfo);
 
             if (m.getPlayer() == currentlyActivePlayer) {
@@ -636,6 +644,19 @@ public class TheGame extends Application {
                 menuRotateR.setOnAction(event -> m.rotate(90));
                 menuRotateL.setOnAction(event -> m.rotate(-90));
                 cm.getItems().addAll(menuAttack, menuRotateR, menuRotateL);
+            }
+
+            for (Skills.SkillList s : m.getPossibleSkills()) {
+                MenuItem item = new MenuItem(s.toString());
+                if (m.getPlayer() != currentlyActivePlayer) {
+                    item.setStyle("-fx-text-fill: grey;");
+                } else if (m.getPlayer().getMana() >= s.getCost()) {
+                    item.setOnAction(ev -> skills.useSkill(s));
+                    item.setStyle("-fx-text-fill: green;");
+                } else {
+                    item.setStyle("-fx-text-fill: red;");
+                }
+                cm.getItems().add(item);
             }
 
             cm.show(tile.getSquare(), e.getScreenX(), e.getScreenY());

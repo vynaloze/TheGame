@@ -1,11 +1,8 @@
 package thegamepackage.creatures;
 
-import thegamepackage.ui.Coordinates;
-import thegamepackage.ui.ID;
-import thegamepackage.ui.Player;
+import thegamepackage.ui.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import thegamepackage.ui.TheGame;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -20,7 +17,7 @@ public class StonedSleepwalker extends Monster {
         this.attackedTiles.add(new Coordinates(0, -1));
         this.attackedTiles.add(new Coordinates(0, -2));
         this.attackedTiles.add(new Coordinates(0, -3));
+
+        this.possibleSkills.add(Skills.SkillList.WALL_CROSSING);
     }
-
-
 }

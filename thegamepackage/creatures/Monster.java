@@ -4,6 +4,7 @@ import thegamepackage.ui.Coordinates;
 import thegamepackage.ui.ID;
 import thegamepackage.ui.Player;
 import javafx.scene.image.ImageView;
+import thegamepackage.ui.Skills;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public abstract class Monster {
     protected int speed;
     protected List<Coordinates> attackedTiles = new ArrayList<>();
     private int currentRotation;
+    protected List<Skills.SkillList> possibleSkills = new ArrayList<>();
 
     public static Monster spawnNewMonster(ID id, Player player) {
         switch (id) {
@@ -89,15 +91,16 @@ public abstract class Monster {
     public void rotate(int degree) {
         currentRotation += degree;
         pic.setRotate(currentRotation);
-
-        if (degree == 90) {
-            for (Coordinates coordinates : attackedTiles) {
-                coordinates.rotateCoordinates(true);
-            }
-        } else {
-            for (Coordinates coordinates : attackedTiles) {
-                coordinates.rotateCoordinates(false);
-            }
+        for (Coordinates coordinates : attackedTiles) {
+            coordinates.rotateCoordinates(degree);
         }
+    }
+
+    public List<Skills.SkillList> getPossibleSkills() {
+        return possibleSkills;
+    }
+
+    public int getCurrentRotation() {
+        return currentRotation;
     }
 }

@@ -12,25 +12,6 @@ public class Coordinates {
         this.y = y;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Coordinates that = (Coordinates) o;
-
-        if (x != that.x) return false;
-        return y == that.y;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
-        return result;
-    }
-
     public int getX() {
         return x;
     }
@@ -39,16 +20,17 @@ public class Coordinates {
         return y;
     }
 
-    public void rotateCoordinates(boolean toRight)
-    {
-        if(toRight)
-        {
+    public void rotateCoordinates(int degree) {
+        if (degree == 90) {
             int temp = x;
             x = -y;
             y = temp;
         }
-        else
-        {
+        if (degree == 180) {
+            x = -x;
+            y = -y;
+        }
+        if (degree == -90) {
             int temp = x;
             x = y;
             y = -temp;
