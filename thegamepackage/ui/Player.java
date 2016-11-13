@@ -9,6 +9,7 @@ public class Player {
     private int mana = 10;      //todo: mana 0
     private int monstersAlive = 3;
     private boolean canMove = true;
+    private boolean paralysed = false;
 
     public String getName() {
         return name;
@@ -50,5 +51,11 @@ public class Player {
         monstersAlive += value;
     }
 
+    public boolean isParalysed() {
+        return paralysed;
+    }
 
+    public void setParalysed(boolean paralysed) {
+        this.paralysed = paralysed;
+    }
 }

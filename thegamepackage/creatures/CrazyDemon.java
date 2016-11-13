@@ -25,6 +25,8 @@ public class CrazyDemon extends Monster {
         this.attackedTiles.add(new Coordinates(-2, -2));
 
         this.possibleSkills.add(Skills.SkillList.DEATH_STRIKE);
+        this.possibleSkills.add(Skills.SkillList.PARALYSE);
+        this.possibleSkills.add(Skills.SkillList.FURY);
     }
 
 }

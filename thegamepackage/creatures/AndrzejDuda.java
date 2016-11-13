@@ -26,6 +26,7 @@ public class AndrzejDuda extends Monster {
         this.attackedTiles.add(new Coordinates(0, -2));
 
         this.possibleSkills.add(Skills.SkillList.FIREBALL);
+        this.possibleSkills.add(Skills.SkillList.BLOW_OF_WIND);
     }
 
 }

@@ -32,5 +32,7 @@ public class VladimirPutin extends Monster {
         this.attackedTiles.add(new Coordinates(1, -1));
 
         this.possibleSkills.add(Skills.SkillList.DEATH_STRIKE);
+        this.possibleSkills.add(Skills.SkillList.PARALYSE);
+        this.possibleSkills.add(Skills.SkillList.BLOW_OF_WIND);
     }
 }

@@ -28,6 +28,7 @@ public class DonaldTrump extends Monster {
         this.attackedTiles.add(new Coordinates(0, -2));
 
         this.possibleSkills.add(Skills.SkillList.FIREBALL);
+        this.possibleSkills.add(Skills.SkillList.PARALYSE);
     }
 
 }

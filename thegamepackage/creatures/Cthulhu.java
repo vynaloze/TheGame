@@ -26,6 +26,7 @@ public class Cthulhu extends Monster {
         this.attackedTiles.add(new Coordinates(0, -3));
 
         this.possibleSkills.add(Skills.SkillList.WATER_STREAM);
+        this.possibleSkills.add(Skills.SkillList.BLOW_OF_WIND);
     }
 }
 

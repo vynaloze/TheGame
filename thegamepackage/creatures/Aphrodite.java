@@ -24,6 +24,7 @@ public class Aphrodite extends Monster {
         this.attackedTiles.add(new Coordinates(0, 1));
 
         this.possibleSkills.add(Skills.SkillList.WALL_CROSSING);
-
+        this.possibleSkills.add(Skills.SkillList.FURY);
+        this.possibleSkills.add(Skills.SkillList.BLOW_OF_WIND);
     }
 }

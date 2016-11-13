@@ -400,6 +400,7 @@ public class TheGame extends Application {
         checkAndAnnounceWinner();
 
         currentlyActivePlayer.setMoveValue(true);
+        currentlyActivePlayer.setParalysed(false);
 
         if (currentlyActivePlayer == p1) {
             currentlyActivePlayer = p2;
@@ -443,19 +444,10 @@ public class TheGame extends Application {
             return;
         }
 
-        previouslyClickedTile.deselect();
-
-        if (tile.getMonster() != null) {
-            if (tile.isSelected())
-                tile.deselect();
-            else
-                tile.select();
-        } else {
-            if (isMoveValid(x, y)) {
-                tile.setMonster(previouslyClickedTile.getMonster());
-                previouslyClickedTile.removeMonster();
-                currentlyActivePlayer.setMoveValue(false);
-            }
+        if (tile.getMonster() == null && isMoveValid(x, y)) {
+            tile.setMonster(previouslyClickedTile.getMonster());
+            previouslyClickedTile.removeMonster();
+            currentlyActivePlayer.setMoveValue(false);
         }
         previouslyClickedTile = tile;
     }
@@ -470,12 +462,26 @@ public class TheGame extends Application {
                 && previouslyClickedTile.getMonster().getPlayer() == currentlyActivePlayer
                 && currentlyActivePlayer.canMove()
                 && tile.isOccupied() == false
-                && abs(tile.getX() - previouslyClickedTile.getX()) + abs(tile.getY() - previouslyClickedTile.getY()) <= previouslyClickedTile.getMonster().getSpeed()
+                && checkIfDistanceIsValid(x, y)
                 && checkIfSpecificMoveIsValid(x, y);
     }
 
+    private boolean checkIfDistanceIsValid(int x, int y) {
+        Tile tile = tiles[y][x];
+        if (currentlyActivePlayer.isParalysed()) {
+            return abs(tile.getX() - previouslyClickedTile.getX()) + abs(tile.getY() - previouslyClickedTile.getY()) == 1;
+        } else {
+            return abs(tile.getX() - previouslyClickedTile.getX()) + abs(tile.getY() - previouslyClickedTile.getY()) <= previouslyClickedTile.getMonster().getSpeed();
+        }
+    }
+
     private boolean checkIfSpecificMoveIsValid(int x, int y) {
-        //checking all 24 possible destinations
+        //if monster can jump, nothing here is important
+        if(previouslyClickedTile.getMonster().getPossibleSkills().contains(Skills.SkillList.JUMPING4)){
+            return true;
+        }
+
+        //if not, we check all 24 possible destinations
         int a = previouslyClickedTile.getX();
         int b = previouslyClickedTile.getY();
 

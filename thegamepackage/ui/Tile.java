@@ -15,7 +15,6 @@ public class Tile {
     private int row;
     private boolean occupied = false;
     private Monster monster = null;
-    private boolean selected = false;
     private StackPane square = new StackPane();
 
     public Tile(int row, int column) {
@@ -85,30 +84,14 @@ public class Tile {
         return row;
     }
 
-    public void select()     //todo: change this
-    {
-        selected = true;
-    }
-
-    public void deselect() {
-        selected = false;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void highlight(String color)
-    {
+    public void highlight(String color) {
         square.setBorder(new Border(new BorderStroke(javafx.scene.paint.Paint.valueOf(color),
                 BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(3))));
     }
 
-    public void removeHighlight()
-    {
+    public void removeHighlight() {
         square.setBorder(null);
     }
-
 
 
 }

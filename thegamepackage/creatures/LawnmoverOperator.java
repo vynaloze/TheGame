@@ -28,6 +28,8 @@ public class LawnmoverOperator extends Monster {
         this.attackedTiles.add(new Coordinates(0, 1));
 
         this.possibleSkills.add(Skills.SkillList.FIREBALL);
+        this.possibleSkills.add(Skills.SkillList.PARALYSE);
+        this.possibleSkills.add(Skills.SkillList.FURY);
     }
 }
 

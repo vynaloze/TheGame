@@ -1,9 +1,11 @@
 package thegamepackage.ui;
 
+import javafx.scene.control.Alert;
 import thegamepackage.creatures.Monster;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -37,6 +39,15 @@ public class Skills {
                 break;
             case WATER_STREAM:
                 useWaterStream();
+                break;
+            case PARALYSE:
+                useParalyse();
+                break;
+            case FURY:
+                useFury();
+                break;
+            case BLOW_OF_WIND:
+                useBlowOfWind();
                 break;
         }
     }
@@ -225,39 +236,56 @@ public class Skills {
         tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.WATER_STREAM.getCost());
     }
 
-    private void performAttack(List<Coordinates> attackedTiles, int rootX, int rootY) {
-        for (Coordinates coordinates : attackedTiles) {
-            int x = rootX + coordinates.getX();
-            int y = rootY + coordinates.getY();
+    private void useParalyse() {
+        if (findOpponentPlayer() != null) {
+            findOpponentPlayer().setParalysed(true);
+            tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.PARALYSE.getCost());
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("To your information");
+            alert.setHeaderText(null);
+            alert.setContentText(tileWithActiveMonster.getMonster().getPlayer().getName() + " used PARALYSE!");
+            alert.showAndWait();
+        }
+    }
+
+    private void useFury() {
+        attackedTiles.add(new Coordinates(1, 0));
+        attackedTiles.add(new Coordinates(2, 0));
+        attackedTiles.add(new Coordinates(-1, 0));
+        attackedTiles.add(new Coordinates(-2, 0));
+        attackedTiles.add(new Coordinates(0, 1));
+        attackedTiles.add(new Coordinates(0, 2));
+        attackedTiles.add(new Coordinates(0, -1));
+        attackedTiles.add(new Coordinates(0, -2));
+        attackedTiles.add(new Coordinates(-1, 1));
+        attackedTiles.add(new Coordinates(1, 1));
+        attackedTiles.add(new Coordinates(-1, -1));
+        attackedTiles.add(new Coordinates(1, -1));
+
+        performAttack(attackedTiles, tileWithActiveMonster.getX(), tileWithActiveMonster.getY());
+        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.FURY.getCost());
+    }
+
+    private void useBlowOfWind() {
+        Coordinates c = new Coordinates(0, -1);
+        c.rotateCoordinates(rotation);
+        ArrayList<Tile> tileArrayList = findTilesWithOpponentMonsters();
+
+        for (Tile tile : tileArrayList) {
+            int x = tile.getX() + c.getX();
+            int y = tile.getY() + c.getY();
             if (x >= 0 && x <= 7 && y >= 0 && y <= 7) {
-                tiles[y][x].highlight("purple");
-                if (tiles[y][x].getMonster() != null) {
-                    if (tiles[y][x].getMonster().getPlayer() != tileWithActiveMonster.getMonster().getPlayer()) {
-                        tiles[y][x].getMonster().getPlayer().modifyMonstersAliveValue(-1);
-                        tiles[y][x].removeMonster();
-                    }
+                Tile target = tiles[y][x];
+                if (!target.isOccupied()) {
+                    target.setMonster(tile.getMonster());
+                    tile.removeMonster();
                 }
             }
         }
+        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.BLOW_OF_WIND.getCost());
     }
 
-    private int convertRotation(int currentRotation) {
-        // to <-90,180> degrees set
-        if (currentRotation < 0) {
-            while (currentRotation <= -270) {
-                currentRotation += 360;
-            }
-        } else {
-            while (currentRotation >= 270) {
-                currentRotation -= 360;
-            }
-        }
-        return currentRotation;
-    }
-
-    private boolean checkIfVerticalDirection(int rotation) {
-        return (rotation / 90) % 2 == 0;
-    }
 
     private void crossThroughWall(Direction d, int x, int y) {
         Monster m = tileWithActiveMonster.getMonster();
@@ -297,11 +325,74 @@ public class Skills {
         }
     }
 
+    private void performAttack(List<Coordinates> attackedTiles, int rootX, int rootY) {
+        for (Coordinates coordinates : attackedTiles) {
+            int x = rootX + coordinates.getX();
+            int y = rootY + coordinates.getY();
+            if (x >= 0 && x <= 7 && y >= 0 && y <= 7) {
+                tiles[y][x].highlight("purple");
+                if (tiles[y][x].getMonster() != null) {
+                    if (tiles[y][x].getMonster().getPlayer() != tileWithActiveMonster.getMonster().getPlayer()) {
+                        tiles[y][x].getMonster().getPlayer().modifyMonstersAliveValue(-1);
+                        tiles[y][x].removeMonster();
+                    }
+                }
+            }
+        }
+    }
+
+    private int convertRotation(int currentRotation) {
+        // to <-90,180> degrees set
+        if (currentRotation < 0) {
+            while (currentRotation <= -270) {
+                currentRotation += 360;
+            }
+        } else {
+            while (currentRotation >= 270) {
+                currentRotation -= 360;
+            }
+        }
+        return currentRotation;
+    }
+
+    private boolean checkIfVerticalDirection(int rotation) {
+        return (rotation / 90) % 2 == 0;
+    }
+
+    private Player findOpponentPlayer() {
+        for (int i = 0; i < tiles.length; i++) {
+            for (int j = 0; j < tiles.length; j++) {
+                Tile t = tiles[i][j];
+                if (t.getMonster() != null) {
+                    if (t.getMonster().getPlayer() != tileWithActiveMonster.getMonster().getPlayer()) {
+                        return t.getMonster().getPlayer();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private ArrayList<Tile> findTilesWithOpponentMonsters() {
+        ArrayList<Tile> tileArrayList = new ArrayList<>();
+        for (int i = 0; i < tiles.length; i++) {
+            for (int j = 0; j < tiles.length; j++) {
+                Tile t = tiles[i][j];
+                if (t.getMonster() != null) {
+                    if (t.getMonster().getPlayer() != tileWithActiveMonster.getMonster().getPlayer()) {
+                        tileArrayList.add(t);
+                    }
+                }
+            }
+        }
+        return tileArrayList;
+    }
+
 
     public enum SkillList {
         WALL_CROSSING(5), DEATH_STRIKE(10), FIREBALL(7), WATER_STREAM(5), PARALYSE(4),
-        FURY(5), JUMPING(0), BLOW_OF_WIND(4), STONE_MAKING(5), STONE_REMOVING(4),
-        STONE_PUSHING(0), HASTE(5), LIGHTNING(6), FIRE_FIELD(5), POISON_FIELD(5);       //TODO: protection
+        FURY(5), JUMPING4(0), BLOW_OF_WIND(4), STONE_MAKING(5), STONE_REMOVING(4),
+        STONE_PUSHING(0), HASTE(5), LIGHTNING(6), FIRE_FIELD(5), POISON_FIELD(5);       //TODO: protection4
 
         private int cost;
 
@@ -315,7 +406,7 @@ public class Skills {
 
         @Override
         public String toString() {
-            return super.toString().toLowerCase().replace("_", " ") + "  cost: " + cost;
+            return super.toString().toLowerCase().replace("_", " ").replace("4", " (passive)") + "  cost: " + cost;
         }
     }
 

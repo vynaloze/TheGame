@@ -24,6 +24,7 @@ public class BenedictXVI extends Monster {
         this.attackedTiles.add(new Coordinates(0, -2));
 
         this.possibleSkills.add(Skills.SkillList.DEATH_STRIKE);
+        this.possibleSkills.add(Skills.SkillList.PARALYSE);
     }
 
 }
