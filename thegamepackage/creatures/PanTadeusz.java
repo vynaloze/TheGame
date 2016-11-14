@@ -29,5 +29,6 @@ public class PanTadeusz extends Monster {
         this.possibleSkills.add(Skills.SkillList.FURY);
         this.possibleSkills.add(Skills.SkillList.JUMPING4);
         this.possibleSkills.add(Skills.SkillList.BLOW_OF_WIND);
+        this.possibleSkills.add(Skills.SkillList.STONE_REMOVING);
     }
 }

@@ -22,5 +22,6 @@ public class StonedSleepwalker extends Monster {
         this.possibleSkills.add(Skills.SkillList.WALL_CROSSING);
         this.possibleSkills.add(Skills.SkillList.PARALYSE);
         this.possibleSkills.add(Skills.SkillList.FURY);
+        this.possibleSkills.add(Skills.SkillList.STONE_MAKING);
     }
 }

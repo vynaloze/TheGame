@@ -25,7 +25,7 @@ public class BlueMage extends Monster {
         this.possibleSkills.add(Skills.SkillList.WALL_CROSSING);
         this.possibleSkills.add(Skills.SkillList.WATER_STREAM);
         this.possibleSkills.add(Skills.SkillList.BLOW_OF_WIND);
-
+        this.possibleSkills.add(Skills.SkillList.HASTE);
     }
 
 

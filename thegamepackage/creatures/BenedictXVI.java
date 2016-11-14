@@ -25,6 +25,9 @@ public class BenedictXVI extends Monster {
 
         this.possibleSkills.add(Skills.SkillList.DEATH_STRIKE);
         this.possibleSkills.add(Skills.SkillList.PARALYSE);
+        this.possibleSkills.add(Skills.SkillList.STONE_MAKING);
+        this.possibleSkills.add(Skills.SkillList.STONE_REMOVING);
+        this.possibleSkills.add(Skills.SkillList.LIGHTNING);
     }
 
 }

@@ -30,6 +30,8 @@ public class Infernalist extends Monster {
 
         this.possibleSkills.add(Skills.SkillList.WALL_CROSSING);
         this.possibleSkills.add(Skills.SkillList.FIREBALL);
+        this.possibleSkills.add(Skills.SkillList.STONE_MAKING);
+        this.possibleSkills.add(Skills.SkillList.LIGHTNING);
+        this.possibleSkills.add(Skills.SkillList.FIRE_FIELD);
     }
-
 }

@@ -21,6 +21,8 @@ public class Jesus extends Monster {
         this.possibleSkills.add(Skills.SkillList.DEATH_STRIKE);
         this.possibleSkills.add(Skills.SkillList.PARALYSE);
         this.possibleSkills.add(Skills.SkillList.BLOW_OF_WIND);
+        this.possibleSkills.add(Skills.SkillList.STONE_REMOVING);
+        this.possibleSkills.add(Skills.SkillList.PROTECTION4);
     }
 
 }

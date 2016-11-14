@@ -31,5 +31,7 @@ public class HippopotamusAmphibius extends Monster {
         this.attackedTiles.add(new Coordinates(-1, 1));
 
         this.possibleSkills.add(Skills.SkillList.WATER_STREAM);
+        this.possibleSkills.add(Skills.SkillList.STONE_REMOVING);
+        this.possibleSkills.add(Skills.SkillList.STONE_PUSHING);
     }
 }

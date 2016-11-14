@@ -22,5 +22,6 @@ public class FluffyUnicorn extends Monster {
         this.attackedTiles.add(new Coordinates(0, -2));
 
         this.possibleSkills.add(Skills.SkillList.JUMPING4);
+        this.possibleSkills.add(Skills.SkillList.LIGHTNING);
     }
 }

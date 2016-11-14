@@ -25,5 +25,7 @@ public class Cobra extends Monster {
         this.attackedTiles.add(new Coordinates(-1, -2));
 
         this.possibleSkills.add(Skills.SkillList.PARALYSE);
+        this.possibleSkills.add(Skills.SkillList.HASTE);
+        this.possibleSkills.add(Skills.SkillList.POISON_FIELD);
     }
 }

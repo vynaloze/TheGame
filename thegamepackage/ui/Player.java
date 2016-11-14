@@ -58,4 +58,5 @@ public class Player {
     public void setParalysed(boolean paralysed) {
         this.paralysed = paralysed;
     }
+
 }

@@ -20,6 +20,8 @@ public abstract class Monster {
     protected List<Coordinates> attackedTiles = new ArrayList<>();
     private int currentRotation;
     protected List<Skills.SkillList> possibleSkills = new ArrayList<>();
+    protected boolean underProtection = false;
+    protected boolean hasted = false;
 
     public static Monster spawnNewMonster(ID id, Player player) {
         switch (id) {
@@ -102,5 +104,21 @@ public abstract class Monster {
 
     public int getCurrentRotation() {
         return currentRotation;
+    }
+
+    public boolean isUnderProtection() {
+        return underProtection;
+    }
+
+    public void setUnderProtection(boolean underProtection) {
+        this.underProtection = underProtection;
+    }
+
+    public boolean isHasted() {
+        return hasted;
+    }
+
+    public void setHasted(boolean hasted) {
+        this.hasted = hasted;
     }
 }

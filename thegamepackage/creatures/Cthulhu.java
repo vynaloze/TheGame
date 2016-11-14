@@ -27,6 +27,10 @@ public class Cthulhu extends Monster {
 
         this.possibleSkills.add(Skills.SkillList.WATER_STREAM);
         this.possibleSkills.add(Skills.SkillList.BLOW_OF_WIND);
+        this.possibleSkills.add(Skills.SkillList.STONE_REMOVING);
+        this.possibleSkills.add(Skills.SkillList.STONE_PUSHING);
+        this.possibleSkills.add(Skills.SkillList.HASTE);
+        this.possibleSkills.add(Skills.SkillList.LIGHTNING);
     }
 }
 

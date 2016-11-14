@@ -15,7 +15,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import thegamepackage.creatures.Monster;
@@ -129,7 +128,7 @@ public class TheGame extends Application {
             if (!thereIsAStoneOnThisTile) {
                 alreadyStoned[i][0] = x;
                 alreadyStoned[i][1] = y;
-                tiles[x][y].changeStoneValue();
+                tiles[x][y].makeNewStone();
                 i++;
             }
         }
@@ -190,7 +189,6 @@ public class TheGame extends Application {
                 performProperMovementAction(x, y);
             }
         });
-
 
         vbox.getChildren().add(tilepane);
     }
@@ -394,10 +392,13 @@ public class TheGame extends Application {
     }
 
 
-    //methods called every turn, check for winner & repaint gui
+    //methods called every turn, check for winner, repaint gui, etc
     private void nextTurn(VBox vbox) {
 
-        checkAndAnnounceWinner();
+        checkAndAnnounceWinner();                       //todo: organise
+
+        Skills skills = new Skills(tiles);
+        skills.updateProtectedMonsters();
 
         currentlyActivePlayer.setMoveValue(true);
         currentlyActivePlayer.setParalysed(false);
@@ -438,6 +439,7 @@ public class TheGame extends Application {
     //methods to handle movement
     private void performProperMovementAction(int x, int y) {
         Tile tile = tiles[y][x];
+        Skills skills = new Skills(tiles);
 
         if (previouslyClickedTile == null) {
             previouslyClickedTile = tile;
@@ -448,6 +450,8 @@ public class TheGame extends Application {
             tile.setMonster(previouslyClickedTile.getMonster());
             previouslyClickedTile.removeMonster();
             currentlyActivePlayer.setMoveValue(false);
+            tile.getMonster().setHasted(false);
+            skills.updateProtectedMonsters();
         }
         previouslyClickedTile = tile;
     }
@@ -468,16 +472,21 @@ public class TheGame extends Application {
 
     private boolean checkIfDistanceIsValid(int x, int y) {
         Tile tile = tiles[y][x];
+        if (currentlyActivePlayer.isParalysed() && previouslyClickedTile.getMonster().isHasted()) {
+            return abs(tile.getX() - previouslyClickedTile.getX()) + abs(tile.getY() - previouslyClickedTile.getY()) <= 2;
+        }
         if (currentlyActivePlayer.isParalysed()) {
             return abs(tile.getX() - previouslyClickedTile.getX()) + abs(tile.getY() - previouslyClickedTile.getY()) == 1;
-        } else {
-            return abs(tile.getX() - previouslyClickedTile.getX()) + abs(tile.getY() - previouslyClickedTile.getY()) <= previouslyClickedTile.getMonster().getSpeed();
         }
+        if (previouslyClickedTile.getMonster().isHasted()) {
+            return abs(tile.getX() - previouslyClickedTile.getX()) + abs(tile.getY() - previouslyClickedTile.getY()) <= previouslyClickedTile.getMonster().getSpeed() + 1;
+        }
+        return abs(tile.getX() - previouslyClickedTile.getX()) + abs(tile.getY() - previouslyClickedTile.getY()) <= previouslyClickedTile.getMonster().getSpeed();
     }
 
     private boolean checkIfSpecificMoveIsValid(int x, int y) {
         //if monster can jump, nothing here is important
-        if(previouslyClickedTile.getMonster().getPossibleSkills().contains(Skills.SkillList.JUMPING4)){
+        if (previouslyClickedTile.getMonster().getPossibleSkills().contains(Skills.SkillList.JUMPING4)) {
             return true;
         }
 
@@ -635,9 +644,9 @@ public class TheGame extends Application {
     private void openActionsMenu(int x, int y, MouseEvent e) {
         Tile tile = tiles[y][x];
         Monster m = tile.getMonster();
-        Skills skills = new Skills(tiles, tile);
 
         if (m != null) {
+            Skills skills = new Skills(tiles, tile);
             ContextMenu cm = new ContextMenu();
             MenuItem shortInfo = new MenuItem(m.getId() + "  speed: " + m.getSpeed());
             cm.getItems().add(shortInfo);
@@ -695,19 +704,20 @@ public class TheGame extends Application {
     }
 
     private void performAttack(Tile tile) {
+        Skills skills = new Skills(tiles);
         for (Coordinates coordinates : tile.getMonster().getAttackedTiles()) {
             int x = tile.getX() + coordinates.getX();
             int y = tile.getY() + coordinates.getY();
             if (x >= 0 && x <= 7 && y >= 0 && y <= 7) {
-                if (tiles[y][x].getMonster() != null) {
+                if (tiles[y][x].getMonster() != null && !tiles[y][x].getMonster().isUnderProtection()) {
                     if (tiles[y][x].getMonster().getPlayer() != currentlyActivePlayer) {
                         tiles[y][x].getMonster().getPlayer().modifyMonstersAliveValue(-1);
                         tiles[y][x].removeMonster();
+                        skills.updateProtectedMonsters();
                     }
                 }
             }
         }
     }
-
 
 }
