@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -379,16 +380,13 @@ public class TheGame extends Application {
             time = Integer.parseInt(properties.getProperty("time"));
             timeAdded = Integer.parseInt(properties.getProperty("time_added"));
 
-        } catch (FileNotFoundException x) {
+        } catch (IOException x) {
             howManyStones = 8;
             p1.setName("P13RV52Y");
             p2.setName("DRU61");
             time = 3;
             timeAdded = 10;
-        } catch (IOException x) {
-            x.printStackTrace();
         }
-
     }
 
 
@@ -719,5 +717,4 @@ public class TheGame extends Application {
             }
         }
     }
-
 }

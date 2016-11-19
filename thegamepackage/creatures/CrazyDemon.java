@@ -18,11 +18,11 @@ public class CrazyDemon extends Monster {
         this.speed = 2;
         this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("crazy_demon.png")));
 
-        this.attackedTiles.add(new Coordinates(0, -2));
-        this.attackedTiles.add(new Coordinates(1, -3));
-        this.attackedTiles.add(new Coordinates(-1, -3));
-        this.attackedTiles.add(new Coordinates(2, -2));
-        this.attackedTiles.add(new Coordinates(-2, -2));
+        this.attackedTiles.add(new Coordinates(0, -1));
+        this.attackedTiles.add(new Coordinates(1, -2));
+        this.attackedTiles.add(new Coordinates(-1, -2));
+        this.attackedTiles.add(new Coordinates(2, -1));
+        this.attackedTiles.add(new Coordinates(-2, -1));
 
         this.possibleSkills.add(Skills.SkillList.DEATH_STRIKE);
         this.possibleSkills.add(Skills.SkillList.PARALYSE);

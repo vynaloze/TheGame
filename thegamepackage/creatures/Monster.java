@@ -17,9 +17,9 @@ public abstract class Monster {
     protected ID id;
     protected ImageView pic;
     protected int speed;
-    protected List<Coordinates> attackedTiles = new ArrayList<>();
+    protected ArrayList<Coordinates> attackedTiles = new ArrayList<>();
     private int currentRotation;
-    protected List<Skills.SkillList> possibleSkills = new ArrayList<>();
+    protected ArrayList<Skills.SkillList> possibleSkills = new ArrayList<>();
     protected boolean underProtection = false;
     protected boolean hasted = false;
 
@@ -86,7 +86,7 @@ public abstract class Monster {
         return player;
     }
 
-    public List<Coordinates> getAttackedTiles() {
+    public ArrayList<Coordinates> getAttackedTiles() {
         return attackedTiles;
     }
 
@@ -98,7 +98,7 @@ public abstract class Monster {
         }
     }
 
-    public List<Skills.SkillList> getPossibleSkills() {
+    public ArrayList<Skills.SkillList> getPossibleSkills() {
         return possibleSkills;
     }
 

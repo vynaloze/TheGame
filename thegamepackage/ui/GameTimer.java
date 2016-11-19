@@ -20,9 +20,9 @@ public class GameTimer {
 
 
     public GameTimer(Label label, int minutesOfGame, int secondsAddedEveryTurn, String p1, String p2) {
-        this.timeRemaining1 = minutesOfGame * 60;
-        this.timeRemaining2 = minutesOfGame * 60;
-        this.timeAdded = secondsAddedEveryTurn;
+        this.timeRemaining1 = minutesOfGame * 60000;
+        this.timeRemaining2 = minutesOfGame * 60000;
+        this.timeAdded = secondsAddedEveryTurn * 1000;
         this.label = label;
         this.p1 = p1;
         this.p2 = p2;
@@ -35,6 +35,15 @@ public class GameTimer {
         return sec.toString();
     }
 
+    private String milisec(int time) {
+        Integer milisec = time % 1000;
+        if(milisec<10)
+            return "00"+milisec;
+        if(milisec<100)
+            return "0"+ milisec;
+        return milisec.toString();
+    }
+
     public void start() {
         Runnable runnable = new UpdateAndCheckForWinner();
         TimerTask timerTask = new TimerTask() {
@@ -44,7 +53,7 @@ public class GameTimer {
             }
         };
 
-        timer.scheduleAtFixedRate(timerTask, 0, 1000);
+        timer.scheduleAtFixedRate(timerTask, 0, 1);
     }
 
     public void changePlayer() {
@@ -65,7 +74,9 @@ public class GameTimer {
 
         @Override
         public void run() {
-            label.setText(timeRemaining1 / 60 + ":" + sec(timeRemaining1) + "  -  " + timeRemaining2 / 60 + ":" + sec(timeRemaining2));
+            label.setText(timeRemaining1 / 60000 + ":" + sec(timeRemaining1/1000) + ":" + milisec(timeRemaining1)
+                    + "  -  "
+                    + timeRemaining2 / 60000 + ":" + sec(timeRemaining2/1000) + ":" + milisec(timeRemaining2));
 
             if (!pause2 && timeRemaining2 > 0)
                 timeRemaining2--;

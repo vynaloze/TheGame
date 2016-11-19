@@ -1,6 +1,9 @@
 package thegamepackage.ui;
 
 import javafx.scene.control.Alert;
+import thegamepackage.creatures.Cobra;
+import thegamepackage.creatures.Infernalist;
+import thegamepackage.creatures.LasiodoraParahybana;
 import thegamepackage.creatures.Monster;
 
 import java.util.ArrayList;
@@ -321,14 +324,17 @@ public class Skills {
     }
 
     private void useStoneMakingOrRemoving(boolean make) {
-        attackedTiles = tileWithActiveMonster.getMonster().getAttackedTiles();
-        for (Coordinates c : attackedTiles) {
-            c.rotateCoordinates(rotation);
-            int x = tileWithActiveMonster.getX() + c.getX();
-            int y = tileWithActiveMonster.getY() + c.getY();
-            if (x >= 0 && x <= 7 && y >= 0 && y <= 7) {
-                tiles[y][x].getSquare().setOnMouseClicked(e -> handleChangeOfStone(attackedTiles, x, y, make));
+        // not exactly coordinates as before, but Xs and Ys of the board
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                tilesAffectedBySkill.add(new Coordinates(i, j));
             }
+        }
+        // in this way, lambda expression's parameters are effectively final
+        for (Coordinates c : tilesAffectedBySkill) {
+            int x = c.getX();
+            int y = c.getY();
+            tiles[y][x].getSquare().setOnMouseClicked(e -> handleChangeOfStone(tilesAffectedBySkill, x, y, make));
         }
     }
 
@@ -521,7 +527,7 @@ public class Skills {
         return tileArrayList;
     }
 
-    private void handleChangeOfStone(List<Coordinates> attackedTiles, int a, int b, boolean make) {
+    private void handleChangeOfStone(List<Coordinates> wholeBoardOfTiles, int a, int b, boolean make) {
         if (make) {
             tiles[b][a].makeNewStone();
             tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.STONE_MAKING.getCost());
@@ -530,22 +536,15 @@ public class Skills {
             tiles[b][a].removeStone();
             tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.STONE_REMOVING.getCost());
         }
-        for (Coordinates c : attackedTiles) {
-            c.rotateCoordinates(rotation);
-            int x = tileWithActiveMonster.getX() + c.getX();
-            int y = tileWithActiveMonster.getY() + c.getY();
-            if (x >= 0 && x <= 7 && y >= 0 && y <= 7) {
-                tiles[y][x].getSquare().setOnMouseClicked(null);
-            }
+        for (Coordinates c : wholeBoardOfTiles) {
+            tiles[c.getY()][c.getX()].getSquare().setOnMouseClicked(null);
         }
     }
 
     private void handleFieldCreation(List<Coordinates> attackedTiles, int a, int b, String color) {
-        //mainly the same as above
-        tiles[b][a].setField(true);
-        tiles[b][a].getSquare().setStyle("-fx-background-color: " + color + ";");
-        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.FIRE_FIELD.getCost());
+        final int MAX_FIELDS = 3;
 
+        // clear clickability of tiles
         for (Coordinates c : attackedTiles) {
             c.rotateCoordinates(rotation);
             int x = tileWithActiveMonster.getX() + c.getX();
@@ -554,6 +553,32 @@ public class Skills {
                 tiles[y][x].getSquare().setOnMouseClicked(null);
             }
         }
+
+        // check if not too many
+        switch (tileWithActiveMonster.getMonster().getId()) {
+            case INFERNALIST:
+                if (Infernalist.getFields() == MAX_FIELDS) {
+                    return;
+                }
+                Infernalist.addField();
+                break;
+            case LASIODORA_PARAHYBANA:
+                if (LasiodoraParahybana.getFields() == MAX_FIELDS) {
+                    return;
+                }
+                LasiodoraParahybana.addField();
+                break;
+            case COBRA:
+                if (Cobra.getFields() == MAX_FIELDS) {
+                    return;
+                }
+                Cobra.addField();
+        }
+
+        // create a new field
+        tiles[b][a].setField(true);
+        tiles[b][a].getSquare().setStyle("-fx-background-color: " + color + ";");
+        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.FIRE_FIELD.getCost());
     }
 
     private Tile findTileWithJesus() {

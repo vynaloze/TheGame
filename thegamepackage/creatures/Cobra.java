@@ -11,6 +11,7 @@ import thegamepackage.ui.Skills;
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
 public class Cobra extends Monster {
+    private static int fields = 0;
 
     public Cobra(Player player) {
         this.id = ID.COBRA;
@@ -27,5 +28,13 @@ public class Cobra extends Monster {
         this.possibleSkills.add(Skills.SkillList.PARALYSE);
         this.possibleSkills.add(Skills.SkillList.HASTE);
         this.possibleSkills.add(Skills.SkillList.POISON_FIELD);
+    }
+
+    public static int getFields() {
+        return fields;
+    }
+
+    public static void addField() {
+        Cobra.fields++;
     }
 }

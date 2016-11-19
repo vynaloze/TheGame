@@ -11,6 +11,7 @@ import thegamepackage.ui.Skills;
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
 public class LasiodoraParahybana extends Monster {
+    private static int fields = 0;
 
     public LasiodoraParahybana(Player player) {
         this.id = ID.LASIODORA_PARAHYBANA;
@@ -29,5 +30,13 @@ public class LasiodoraParahybana extends Monster {
 
         this.possibleSkills.add(Skills.SkillList.PARALYSE);
         this.possibleSkills.add(Skills.SkillList.POISON_FIELD);
+    }
+
+    public static int getFields() {
+        return fields;
+    }
+
+    public static void addField() {
+        LasiodoraParahybana.fields++;
     }
 }

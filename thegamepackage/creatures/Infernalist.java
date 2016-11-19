@@ -11,6 +11,7 @@ import thegamepackage.ui.Skills;
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
 public class Infernalist extends Monster {
+    private static int fields = 0;
 
     public Infernalist(Player player) {
         this.id = ID.INFERNALIST;
@@ -33,5 +34,13 @@ public class Infernalist extends Monster {
         this.possibleSkills.add(Skills.SkillList.STONE_MAKING);
         this.possibleSkills.add(Skills.SkillList.LIGHTNING);
         this.possibleSkills.add(Skills.SkillList.FIRE_FIELD);
+    }
+
+    public static int getFields() {
+        return fields;
+    }
+
+    public static void addField() {
+        Infernalist.fields++;
     }
 }
