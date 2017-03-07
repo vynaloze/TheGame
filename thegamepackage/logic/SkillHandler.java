@@ -1,10 +1,11 @@
-package thegamepackage.ui;
+package thegamepackage.logic;
 
-import javafx.scene.control.Alert;
 import thegamepackage.creatures.Cobra;
 import thegamepackage.creatures.Infernalist;
 import thegamepackage.creatures.LasiodoraParahybana;
 import thegamepackage.creatures.Monster;
+import thegamepackage.util.Coordinates;
+import thegamepackage.util.ID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
-public class Skills {
+public class SkillHandler {
     private List<Coordinates> tilesAffectedBySkill = new ArrayList<>();
     private List<Coordinates> attackedTiles = new ArrayList<>();
     private Tile[][] tiles;
@@ -20,8 +21,9 @@ public class Skills {
     private int rotation;
     private Tile tileWithJesus;
     private int jesusRotation;
+    private AttackHandler attackHandler;
 
-    public Skills(Tile[][] tiles) {
+    public SkillHandler(Tile[][] tiles) {
         this.tiles = tiles;
         this.tileWithJesus = findTileWithJesus();
         if (tileWithJesus != null) {
@@ -29,17 +31,13 @@ public class Skills {
         }
     }
 
-    public Skills(Tile[][] tiles, Tile tileWithActiveMonster) {
+    public void addActiveTile(Tile tileWithActiveMonster){
         this.tileWithActiveMonster = tileWithActiveMonster;
-        this.tiles = tiles;
         this.rotation = convertRotation(tileWithActiveMonster.getMonster().getCurrentRotation());
-        this.tileWithJesus = findTileWithJesus();
-        if (tileWithJesus != null) {
-            this.jesusRotation = convertRotation(tileWithJesus.getMonster().getCurrentRotation());
-        }
+        this.attackHandler = new AttackHandler(tiles, tileWithActiveMonster.getMonster().getPlayer());
     }
 
-    public void useSkill(SkillList skill) {
+    public void useSkill(SkillList skill, int x, int y) {
         tilesAffectedBySkill.clear();
         attackedTiles.clear();
 
@@ -66,10 +64,10 @@ public class Skills {
                 useBlowOfWind();
                 break;
             case STONE_MAKING:
-                useStoneMakingOrRemoving(true);
+                useStoneMakingOrRemoving(true, x, y);
                 break;
             case STONE_REMOVING:
-                useStoneMakingOrRemoving(false);
+                useStoneMakingOrRemoving(false, x, y);
                 break;
             case STONE_PUSHING:
                 useStonePushing();
@@ -81,10 +79,10 @@ public class Skills {
                 useLightning();
                 break;
             case FIRE_FIELD:
-                useField("red");
+                useField("red", x, y);
                 break;
             case POISON_FIELD:
-                useField("green");
+                useField("green", x, y);
         }
     }
 
@@ -161,14 +159,13 @@ public class Skills {
             Coordinates coordinates = tilesAffectedBySkill.get(i);
             int x = tileWithActiveMonster.getX() + coordinates.getX();
             int y = tileWithActiveMonster.getY() + coordinates.getY();
-            tiles[y][x].highlight("purple");
             t = tiles[y][x];
 
             // if this tile has a monster (kills it btw) or it's border tile, stop and bounce
             if (((x == 0 || x == 7) && !checkIfVerticalDirection(rotation))
                     || ((y == 0 || y == 7) && checkIfVerticalDirection(rotation))
                     || tiles[y][x].getMonster() != null) {
-                performAttack(attackedTiles, x, y);
+                attackHandler.attack(attackedTiles, x, y);
                 break;
             }
             // if the next tile has stone, stop and bounce
@@ -176,7 +173,7 @@ public class Skills {
                 Coordinates nextCoordinates = tilesAffectedBySkill.get(i + 1);
                 Tile nextTile = tiles[tileWithActiveMonster.getY() + nextCoordinates.getY()][tileWithActiveMonster.getX() + nextCoordinates.getX()];
                 if (nextTile.getMonster() == null && nextTile.isOccupied()) {
-                    performAttack(attackedTiles, x, y);
+                    attackHandler.attack(attackedTiles, x, y);
                     break;
                 }
             }
@@ -185,21 +182,21 @@ public class Skills {
         // after "bounce" line goes in both directions, until the end of board/stone (and kills monsters on the way)
         if (checkIfVerticalDirection(rotation)) {
             for (int i = t.getX() + 1; i <= 7 && (!tiles[t.getY()][i].isOccupied() || tiles[t.getY()][i].getMonster() != null); i++) {
-                performAttack(attackedTiles, i, t.getY());
+                attackHandler.attack(attackedTiles, i, t.getY());
             }
             for (int i = t.getX() - 1; i >= 0 && (!tiles[t.getY()][i].isOccupied() || tiles[t.getY()][i].getMonster() != null); i--) {
-                performAttack(attackedTiles, i, t.getY());
+                attackHandler.attack(attackedTiles, i, t.getY());
             }
 
         } else {
             for (int i = t.getY() + 1; i <= 7 && (!tiles[i][t.getX()].isOccupied() || tiles[i][t.getX()].getMonster() != null); i++) {
-                performAttack(attackedTiles, t.getX(), i);
+                attackHandler.attack(attackedTiles, t.getX(), i);
             }
             for (int i = t.getY() - 1; i >= 0 && (!tiles[i][t.getX()].isOccupied() || tiles[i][t.getX()].getMonster() != null); i--) {
-                performAttack(attackedTiles, t.getX(), i);
+                attackHandler.attack(attackedTiles, t.getX(), i);
             }
         }
-        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.DEATH_STRIKE.getCost());
+        tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.DEATH_STRIKE.getCost());
     }
 
     private void useFireball() {
@@ -226,23 +223,22 @@ public class Skills {
             Coordinates coordinates = tilesAffectedBySkill.get(i);
             int x = tileWithActiveMonster.getX() + coordinates.getX();
             int y = tileWithActiveMonster.getY() + coordinates.getY();
-            tiles[y][x].highlight("purple");
 
             if (((x == 0 || x == 7) && !checkIfVerticalDirection(rotation))
                     || ((y == 0 || y == 7) && checkIfVerticalDirection(rotation))
                     || tiles[y][x].getMonster() != null) {
-                performAttack(attackedTiles, x, y);
+                attackHandler.attack(attackedTiles, x, y);
                 break;
             } else {
                 Coordinates nextCoordinates = tilesAffectedBySkill.get(i + 1);
                 Tile nextTile = tiles[tileWithActiveMonster.getY() + nextCoordinates.getY()][tileWithActiveMonster.getX() + nextCoordinates.getX()];
                 if (nextTile.getMonster() == null && nextTile.isOccupied()) {
-                    performAttack(attackedTiles, x, y);
+                    attackHandler.attack(attackedTiles, x, y);
                     break;
                 }
             }
         }
-        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.FIREBALL.getCost());
+        tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.FIREBALL.getCost());
     }
 
     private void useWaterStream() {
@@ -261,7 +257,7 @@ public class Skills {
             Coordinates coordinates = tilesAffectedBySkill.get(i);
             int x = tileWithActiveMonster.getX() + coordinates.getX();
             int y = tileWithActiveMonster.getY() + coordinates.getY();
-            performAttack(attackedTiles, x, y);
+            attackHandler.attack(attackedTiles, x, y);
 
             if (((x == 0 || x == 7) && !checkIfVerticalDirection(rotation))
                     || ((y == 0 || y == 7) && checkIfVerticalDirection(rotation))
@@ -269,19 +265,19 @@ public class Skills {
                 break;
             }
         }
-        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.WATER_STREAM.getCost());
+        tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.WATER_STREAM.getCost());
     }
 
     private void useParalyse() {
         if (findOpponentPlayer() != null) {
             findOpponentPlayer().setParalysed(true);
-            tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.PARALYSE.getCost());
+            tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.PARALYSE.getCost());
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("To your information");
-            alert.setHeaderText(null);
-            alert.setContentText(tileWithActiveMonster.getMonster().getPlayer().getName() + " used PARALYSE!");
-            alert.showAndWait();
+//todo            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//            alert.setTitle("To your information");
+//            alert.setHeaderText(null);
+//            alert.setContentText(tileWithActiveMonster.getMonster().getPlayer().getName() + " used PARALYSE!");
+//            alert.showAndWait();
         }
     }
 
@@ -299,8 +295,8 @@ public class Skills {
         attackedTiles.add(new Coordinates(-1, -1));
         attackedTiles.add(new Coordinates(1, -1));
 
-        performAttack(attackedTiles, tileWithActiveMonster.getX(), tileWithActiveMonster.getY());
-        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.FURY.getCost());
+        attackHandler.attack(attackedTiles, tileWithActiveMonster.getX(), tileWithActiveMonster.getY());
+        tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.FURY.getCost());
     }
 
     private void useBlowOfWind() {
@@ -320,21 +316,17 @@ public class Skills {
                 }
             }
         }
-        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.BLOW_OF_WIND.getCost());
+        tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.BLOW_OF_WIND.getCost());
     }
 
-    private void useStoneMakingOrRemoving(boolean make) {
-        // not exactly coordinates as before, but Xs and Ys of the board
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                tilesAffectedBySkill.add(new Coordinates(i, j));
-            }
-        }
-        // in this way, lambda expression's parameters are effectively final
-        for (Coordinates c : tilesAffectedBySkill) {
-            int x = c.getX();
-            int y = c.getY();
-            tiles[y][x].getSquare().setOnMouseClicked(e -> handleChangeOfStone(tilesAffectedBySkill, x, y, make));
+    private void useStoneMakingOrRemoving(boolean make, int x, int y) {
+        if (make) {
+            tiles[y][x].makeNewStone();
+            tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.STONE_MAKING.getCost());
+
+        } else {
+            tiles[y][x].removeStone();
+            tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.STONE_REMOVING.getCost());
         }
     }
 
@@ -351,7 +343,7 @@ public class Skills {
         if (x >= 0 && x <= 7 && y >= 0 && y <= 7 && a >= 0 && a <= 7 && b >= 0 && b <= 7) {
             Tile root = tiles[y][x];
             Tile target = tiles[b][a];
-            if (root.isOccupied() && !root.isField() && root.getMonster() == null && !target.isOccupied()) {
+            if (root.isOccupied() && root.getField() == null && root.getMonster() == null && !target.isOccupied()) {
                 root.removeStone();
                 target.makeNewStone();
             }
@@ -360,13 +352,13 @@ public class Skills {
 
     private void useHaste() {
         tileWithActiveMonster.getMonster().setHasted(true);
-        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.HASTE.getCost());
+        tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.HASTE.getCost());
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("To your information");
-        alert.setHeaderText(null);
-        alert.setContentText(tileWithActiveMonster.getMonster().getPlayer().getName() + " used HASTE!");
-        alert.showAndWait();
+//todo        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle("To your information");
+//        alert.setHeaderText(null);
+//        alert.setContentText(tileWithActiveMonster.getMonster().getPlayer().getName() + " used HASTE!");
+//        alert.showAndWait();
     }
 
     private void useLightning() {
@@ -382,20 +374,53 @@ public class Skills {
         for (Coordinates c : attackedTiles) {
             c.rotateCoordinates(rotation);
         }
-        performAttack(attackedTiles, tileWithActiveMonster.getX(), tileWithActiveMonster.getY());
-        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.LIGHTNING.getCost());
+        attackHandler.attack(attackedTiles, tileWithActiveMonster.getX(), tileWithActiveMonster.getY());
+        tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.LIGHTNING.getCost());
     }
 
-    private void useField(String color) {
+    private void useField(String color, int x, int y) {
         attackedTiles = tileWithActiveMonster.getMonster().getAttackedTiles();
+
+        final int MAX_FIELDS = 3;
+
+        // check if target is in the attack range of monster
+        boolean found = false;
         for (Coordinates c : attackedTiles) {
             c.rotateCoordinates(rotation);
-            int x = tileWithActiveMonster.getX() + c.getX();
-            int y = tileWithActiveMonster.getY() + c.getY();
-            if (x >= 0 && x <= 7 && y >= 0 && y <= 7) {
-                tiles[y][x].getSquare().setOnMouseClicked(e -> handleFieldCreation(attackedTiles, x, y, color));
+            int a = tileWithActiveMonster.getX() + c.getX();
+            int b = tileWithActiveMonster.getY() + c.getY();
+            if (a == x && b == y) {
+                found = true;
             }
         }
+        if(!found){
+            return;
+        }
+
+        // check if not too many
+        switch (tileWithActiveMonster.getMonster().getId()) {
+            case INFERNALIST:
+                if (Infernalist.getFields() == MAX_FIELDS) {
+                    return;
+                }
+                Infernalist.addField();
+                break;
+            case LASIODORA_PARAHYBANA:
+                if (LasiodoraParahybana.getFields() == MAX_FIELDS) {
+                    return;
+                }
+                LasiodoraParahybana.addField();
+                break;
+            case COBRA:
+                if (Cobra.getFields() == MAX_FIELDS) {
+                    return;
+                }
+                Cobra.addField();
+        }
+
+        // create a new field
+        tiles[y][x].setField(color);
+        tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.FIRE_FIELD.getCost());
     }
 
     public void updateProtectedMonsters() {
@@ -416,7 +441,6 @@ public class Skills {
                 int x = tileWithJesus.getX() + c.getX();
                 int y = tileWithJesus.getY() + c.getY();
                 if (x >= 0 && x <= 7 && y >= 0 && y <= 7 && tiles[y][x].getMonster() != null) {
-                    tiles[y][x].highlight("green");
                     tiles[y][x].getMonster().setUnderProtection(true);
                 }
             }
@@ -433,7 +457,7 @@ public class Skills {
             if (!target.isOccupied()) {
                 target.setMonster(m);
                 tileWithActiveMonster.removeMonster();
-                m.getPlayer().modifyManaValue(-SkillList.WALL_CROSSING.getCost());
+                m.getPlayer().changeMana(-SkillList.WALL_CROSSING.getCost());
             }
         }
         if (d == Direction.RIGHT) {
@@ -441,7 +465,7 @@ public class Skills {
             if (!target.isOccupied()) {
                 target.setMonster(m);
                 tileWithActiveMonster.removeMonster();
-                m.getPlayer().modifyManaValue(-SkillList.WALL_CROSSING.getCost());
+                m.getPlayer().changeMana(-SkillList.WALL_CROSSING.getCost());
             }
         }
         if (d == Direction.UP) {
@@ -449,7 +473,7 @@ public class Skills {
             if (!target.isOccupied()) {
                 target.setMonster(m);
                 tileWithActiveMonster.removeMonster();
-                m.getPlayer().modifyManaValue(-SkillList.WALL_CROSSING.getCost());
+                m.getPlayer().changeMana(-SkillList.WALL_CROSSING.getCost());
             }
         }
         if (d == Direction.DOWN) {
@@ -457,27 +481,10 @@ public class Skills {
             if (!target.isOccupied()) {
                 target.setMonster(m);
                 tileWithActiveMonster.removeMonster();
-                m.getPlayer().modifyManaValue(-SkillList.WALL_CROSSING.getCost());
+                m.getPlayer().changeMana(-SkillList.WALL_CROSSING.getCost());
             }
         }
         updateProtectedMonsters();
-    }
-
-    private void performAttack(List<Coordinates> attackedTiles, int rootX, int rootY) {
-        for (Coordinates coordinates : attackedTiles) {
-            int x = rootX + coordinates.getX();
-            int y = rootY + coordinates.getY();
-            if (x >= 0 && x <= 7 && y >= 0 && y <= 7) {
-                tiles[y][x].highlight("purple");
-                if (tiles[y][x].getMonster() != null && !tiles[y][x].getMonster().isUnderProtection()) {
-                    if (tiles[y][x].getMonster().getPlayer() != tileWithActiveMonster.getMonster().getPlayer()) {
-                        tiles[y][x].getMonster().getPlayer().modifyMonstersAliveValue(-1);
-                        tiles[y][x].removeMonster();
-                        updateProtectedMonsters();
-                    }
-                }
-            }
-        }
     }
 
     private int convertRotation(int currentRotation) {
@@ -527,60 +534,6 @@ public class Skills {
         return tileArrayList;
     }
 
-    private void handleChangeOfStone(List<Coordinates> wholeBoardOfTiles, int a, int b, boolean make) {
-        if (make) {
-            tiles[b][a].makeNewStone();
-            tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.STONE_MAKING.getCost());
-
-        } else {
-            tiles[b][a].removeStone();
-            tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.STONE_REMOVING.getCost());
-        }
-        for (Coordinates c : wholeBoardOfTiles) {
-            tiles[c.getY()][c.getX()].getSquare().setOnMouseClicked(null);
-        }
-    }
-
-    private void handleFieldCreation(List<Coordinates> attackedTiles, int a, int b, String color) {
-        final int MAX_FIELDS = 3;
-
-        // clear clickability of tiles
-        for (Coordinates c : attackedTiles) {
-            c.rotateCoordinates(rotation);
-            int x = tileWithActiveMonster.getX() + c.getX();
-            int y = tileWithActiveMonster.getY() + c.getY();
-            if (x >= 0 && x <= 7 && y >= 0 && y <= 7) {
-                tiles[y][x].getSquare().setOnMouseClicked(null);
-            }
-        }
-
-        // check if not too many
-        switch (tileWithActiveMonster.getMonster().getId()) {
-            case INFERNALIST:
-                if (Infernalist.getFields() == MAX_FIELDS) {
-                    return;
-                }
-                Infernalist.addField();
-                break;
-            case LASIODORA_PARAHYBANA:
-                if (LasiodoraParahybana.getFields() == MAX_FIELDS) {
-                    return;
-                }
-                LasiodoraParahybana.addField();
-                break;
-            case COBRA:
-                if (Cobra.getFields() == MAX_FIELDS) {
-                    return;
-                }
-                Cobra.addField();
-        }
-
-        // create a new field
-        tiles[b][a].setField(true);
-        tiles[b][a].getSquare().setStyle("-fx-background-color: " + color + ";");
-        tileWithActiveMonster.getMonster().getPlayer().modifyManaValue(-SkillList.FIRE_FIELD.getCost());
-    }
-
     private Tile findTileWithJesus() {
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles.length; j++) {
@@ -606,6 +559,11 @@ public class Skills {
 
         public int getCost() {
             return cost;
+        }
+
+        public static boolean isNonInstantSkill(SkillList skill) {
+            return skill == FIRE_FIELD || skill == POISON_FIELD
+                    || skill == STONE_MAKING || skill == STONE_REMOVING;
         }
 
         @Override

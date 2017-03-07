@@ -1,11 +1,11 @@
 package thegamepackage.creatures;
 
-import thegamepackage.ui.Coordinates;
-import thegamepackage.ui.ID;
-import thegamepackage.ui.Player;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import thegamepackage.ui.Skills;
+import thegamepackage.logic.Player;
+import thegamepackage.logic.SkillHandler;
+import thegamepackage.util.Coordinates;
+import thegamepackage.util.ID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -21,7 +21,7 @@ public class Hunter extends Monster {
         this.attackedTiles.add(new Coordinates(-1, -2));
         this.attackedTiles.add(new Coordinates(1, -2));
 
-        this.possibleSkills.add(Skills.SkillList.JUMPING4);
-        this.possibleSkills.add(Skills.SkillList.BLOW_OF_WIND);
+        this.possibleSkills.add(SkillHandler.SkillList.JUMPING4);
+        this.possibleSkills.add(SkillHandler.SkillList.BLOW_OF_WIND);
     }
 }

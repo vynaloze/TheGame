@@ -1,11 +1,11 @@
 package thegamepackage.creatures;
 
-import thegamepackage.ui.Coordinates;
-import thegamepackage.ui.ID;
-import thegamepackage.ui.Player;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import thegamepackage.ui.Skills;
+import thegamepackage.logic.Player;
+import thegamepackage.logic.SkillHandler;
+import thegamepackage.util.Coordinates;
+import thegamepackage.util.ID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -28,8 +28,8 @@ public class LasiodoraParahybana extends Monster {
         this.attackedTiles.add(new Coordinates(1, 1));
         this.attackedTiles.add(new Coordinates(0, 1));
 
-        this.possibleSkills.add(Skills.SkillList.PARALYSE);
-        this.possibleSkills.add(Skills.SkillList.POISON_FIELD);
+        this.possibleSkills.add(SkillHandler.SkillList.PARALYSE);
+        this.possibleSkills.add(SkillHandler.SkillList.POISON_FIELD);
     }
 
     public static int getFields() {

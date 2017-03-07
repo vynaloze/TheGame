@@ -1,11 +1,11 @@
 package thegamepackage.creatures;
 
-import thegamepackage.ui.Coordinates;
-import thegamepackage.ui.ID;
-import thegamepackage.ui.Player;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import thegamepackage.ui.Skills;
+import thegamepackage.logic.Player;
+import thegamepackage.logic.SkillHandler;
+import thegamepackage.util.Coordinates;
+import thegamepackage.util.ID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -29,11 +29,11 @@ public class Infernalist extends Monster {
         this.attackedTiles.add(new Coordinates(0, -2));
         this.attackedTiles.add(new Coordinates(0, -3));
 
-        this.possibleSkills.add(Skills.SkillList.WALL_CROSSING);
-        this.possibleSkills.add(Skills.SkillList.FIREBALL);
-        this.possibleSkills.add(Skills.SkillList.STONE_MAKING);
-        this.possibleSkills.add(Skills.SkillList.LIGHTNING);
-        this.possibleSkills.add(Skills.SkillList.FIRE_FIELD);
+        this.possibleSkills.add(SkillHandler.SkillList.WALL_CROSSING);
+        this.possibleSkills.add(SkillHandler.SkillList.FIREBALL);
+        this.possibleSkills.add(SkillHandler.SkillList.STONE_MAKING);
+        this.possibleSkills.add(SkillHandler.SkillList.LIGHTNING);
+        this.possibleSkills.add(SkillHandler.SkillList.FIRE_FIELD);
     }
 
     public static int getFields() {

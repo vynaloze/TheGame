@@ -1,8 +1,11 @@
 package thegamepackage.creatures;
 
-import thegamepackage.ui.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import thegamepackage.logic.Player;
+import thegamepackage.logic.SkillHandler;
+import thegamepackage.util.Coordinates;
+import thegamepackage.util.ID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -19,9 +22,9 @@ public class StonedSleepwalker extends Monster {
         this.attackedTiles.add(new Coordinates(0, -2));
         this.attackedTiles.add(new Coordinates(0, -3));
 
-        this.possibleSkills.add(Skills.SkillList.WALL_CROSSING);
-        this.possibleSkills.add(Skills.SkillList.PARALYSE);
-        this.possibleSkills.add(Skills.SkillList.FURY);
-        this.possibleSkills.add(Skills.SkillList.STONE_MAKING);
+        this.possibleSkills.add(SkillHandler.SkillList.WALL_CROSSING);
+        this.possibleSkills.add(SkillHandler.SkillList.PARALYSE);
+        this.possibleSkills.add(SkillHandler.SkillList.FURY);
+        this.possibleSkills.add(SkillHandler.SkillList.STONE_MAKING);
     }
 }

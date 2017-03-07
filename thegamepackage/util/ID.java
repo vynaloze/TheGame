@@ -1,4 +1,4 @@
-package thegamepackage.ui;
+package thegamepackage.util;
 
 import java.util.concurrent.ThreadLocalRandom;
 

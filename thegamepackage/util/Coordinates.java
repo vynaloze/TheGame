@@ -1,4 +1,4 @@
-package thegamepackage.ui;
+package thegamepackage.util;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.

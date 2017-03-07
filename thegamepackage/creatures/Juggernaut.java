@@ -1,11 +1,11 @@
 package thegamepackage.creatures;
 
-import thegamepackage.ui.Coordinates;
-import thegamepackage.ui.ID;
-import thegamepackage.ui.Player;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import thegamepackage.ui.Skills;
+import thegamepackage.logic.Player;
+import thegamepackage.logic.SkillHandler;
+import thegamepackage.util.Coordinates;
+import thegamepackage.util.ID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -28,9 +28,9 @@ public class Juggernaut extends Monster {
         this.attackedTiles.add(new Coordinates(1, -3));
         this.attackedTiles.add(new Coordinates(0, -3));
 
-        this.possibleSkills.add(Skills.SkillList.STONE_MAKING);
-        this.possibleSkills.add(Skills.SkillList.STONE_REMOVING);
-        this.possibleSkills.add(Skills.SkillList.STONE_PUSHING);
+        this.possibleSkills.add(SkillHandler.SkillList.STONE_MAKING);
+        this.possibleSkills.add(SkillHandler.SkillList.STONE_REMOVING);
+        this.possibleSkills.add(SkillHandler.SkillList.STONE_PUSHING);
     }
 
 }

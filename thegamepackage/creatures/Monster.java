@@ -1,13 +1,12 @@
 package thegamepackage.creatures;
 
-import thegamepackage.ui.Coordinates;
-import thegamepackage.ui.ID;
-import thegamepackage.ui.Player;
 import javafx.scene.image.ImageView;
-import thegamepackage.ui.Skills;
+import thegamepackage.logic.Player;
+import thegamepackage.logic.SkillHandler;
+import thegamepackage.util.Coordinates;
+import thegamepackage.util.ID;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -19,9 +18,9 @@ public abstract class Monster {
     protected int speed;
     protected ArrayList<Coordinates> attackedTiles = new ArrayList<>();
     private int currentRotation;
-    protected ArrayList<Skills.SkillList> possibleSkills = new ArrayList<>();
-    protected boolean underProtection = false;
-    protected boolean hasted = false;
+    protected ArrayList<SkillHandler.SkillList> possibleSkills = new ArrayList<>();
+    private boolean underProtection = false;
+    private boolean hasted = false;
 
     public static Monster spawnNewMonster(ID id, Player player) {
         switch (id) {
@@ -98,7 +97,7 @@ public abstract class Monster {
         }
     }
 
-    public ArrayList<Skills.SkillList> getPossibleSkills() {
+    public ArrayList<SkillHandler.SkillList> getPossibleSkills() {
         return possibleSkills;
     }
 

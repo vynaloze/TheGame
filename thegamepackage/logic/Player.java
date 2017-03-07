@@ -1,4 +1,4 @@
-package thegamepackage.ui;
+package thegamepackage.logic;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -31,11 +31,11 @@ public class Player {
         return canMove;
     }
 
-    public void setMoveValue(boolean value) {
+    public void setIfCanMove(boolean value) {
         canMove = value;
     }
 
-    public void modifyManaValue(int value) {
+    public void changeMana(int value) {
         mana += value;
     }
 
@@ -47,7 +47,7 @@ public class Player {
         return monstersAlive;
     }
 
-    public void modifyMonstersAliveValue(int value) {
+    public void changeMonstersAlive(int value) {
         monstersAlive += value;
     }
 

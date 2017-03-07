@@ -1,11 +1,11 @@
 package thegamepackage.creatures;
 
-import thegamepackage.ui.Coordinates;
-import thegamepackage.ui.ID;
-import thegamepackage.ui.Player;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import thegamepackage.ui.Skills;
+import thegamepackage.logic.Player;
+import thegamepackage.logic.SkillHandler;
+import thegamepackage.util.Coordinates;
+import thegamepackage.util.ID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -23,11 +23,11 @@ public class BenedictXVI extends Monster {
         this.attackedTiles.add(new Coordinates(0, -1));
         this.attackedTiles.add(new Coordinates(0, -2));
 
-        this.possibleSkills.add(Skills.SkillList.DEATH_STRIKE);
-        this.possibleSkills.add(Skills.SkillList.PARALYSE);
-        this.possibleSkills.add(Skills.SkillList.STONE_MAKING);
-        this.possibleSkills.add(Skills.SkillList.STONE_REMOVING);
-        this.possibleSkills.add(Skills.SkillList.LIGHTNING);
+        this.possibleSkills.add(SkillHandler.SkillList.DEATH_STRIKE);
+        this.possibleSkills.add(SkillHandler.SkillList.PARALYSE);
+        this.possibleSkills.add(SkillHandler.SkillList.STONE_MAKING);
+        this.possibleSkills.add(SkillHandler.SkillList.STONE_REMOVING);
+        this.possibleSkills.add(SkillHandler.SkillList.LIGHTNING);
     }
 
 }
