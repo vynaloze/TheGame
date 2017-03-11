@@ -1,14 +1,14 @@
 package thegamepackage.logic;
 
 import thegamepackage.creatures.Monster;
+import thegamepackage.network.NetworkHandler;
 import thegamepackage.util.Coordinates;
-import thegamepackage.util.MonsterID;
 import thegamepackage.util.GameMessage;
+import thegamepackage.util.MonsterID;
 
 import java.util.ArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,7 +31,8 @@ public class TheGame implements Runnable {
 
     private ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
-
+    //------------------------------------------
+    // preparing the game to run
     public TheGame(GameConditions conditions) {
         this.conditions = conditions;
 
@@ -56,8 +57,7 @@ public class TheGame implements Runnable {
                 board[i][j] = new Tile(i, j);
             }
         }
-
-        for (Coordinates c: conditions.getStones()){
+        for (Coordinates c : conditions.getStones()) {
             board[c.getY()][c.getX()].makeNewStone();
         }
     }
@@ -77,6 +77,8 @@ public class TheGame implements Runnable {
         board[1][7].getMonster().rotate(180);
     }
 
+    //------------------------------------------
+    // bunch of getters and setters
     public void setPlayers(PlayerHandlerInterface playerOneHandler, PlayerHandlerInterface playerTwoHandler) {
         this.playerOneHandler = playerOneHandler;
         this.activePlayerHandler = playerOneHandler;
@@ -103,55 +105,27 @@ public class TheGame implements Runnable {
         return board;
     }
 
-   /* private void readAndApplyProperties(TypeOfGame type) {
-        if (type == TypeOfGame.LOCAL || type == TypeOfGame.SERVER) {
-            // first option means we play locally OR host a server - so this instance chooses options, monsters
-            randomizeMonsters();
-            try {
-                File file = new File("game.properties");
-                FileInputStream fileIn = new FileInputStream(file);
-                Properties properties = new Properties();
-                properties.load(fileIn);
-                fileIn.close();
-
-                howManyStones = Integer.parseInt(properties.getProperty("stones"));
-                playerOne.setName(properties.getProperty("player1"));
-                playerTwo.setName(properties.getProperty("player2"));
-                time = Integer.parseInt(properties.getProperty("time"));
-                timeAdded = Integer.parseInt(properties.getProperty("time_added"));
-
-            } catch (IOException x) {
-                howManyStones = 8;
-                playerOne.setName("P13RV52Y");
-                playerTwo.setName("DRU61");
-                time = 3;
-                timeAdded = 10;
-            }
-            // if we are playing online, send initial data to client
-            if(type== TypeOfGame.SERVER){
-
-            }
-//            // watch out. This is "else" clause fo the first "if" in this function
-   //     } else {
-            // the second option means we are a client - so we ask server for options
-
-       //     Properties message = playerOneHandler.getInitialProperties();
-            //         //todo - apply that
-        }
-    }*/
-
-
+    //------------------------------------------
+    // and here is the hearth of the game
     @Override
     public void run() {
         gameState = GameState.ONE_PLAYING;
         timer.start();
-        scheduler.scheduleAtFixedRate(new GameFlow(), 0, 100, TimeUnit.MILLISECONDS);
+        //the game refreshes 60 times a second, the same as GUI
+        scheduler.scheduleAtFixedRate(new GameFlow(), 0, 16, TimeUnit.MILLISECONDS);
     }
 
     public void stopGame() {
         timer.stop();
         scheduler.shutdown();
-        //todo other "closing everything" shit
+        if (playerOneHandler instanceof NetworkHandler) {
+            NetworkHandler n = (NetworkHandler) playerOneHandler;
+            n.closeConnection();
+        }
+        if (playerTwoHandler instanceof NetworkHandler) {
+            NetworkHandler n = (NetworkHandler) playerTwoHandler;
+            n.closeConnection();
+        }
     }
 
     private class GameFlow implements Runnable {
@@ -188,9 +162,7 @@ public class TheGame implements Runnable {
         private void waitForActions() {
             SkillHandler skillHandler = new SkillHandler(board);
 
-
             GameMessage move = activePlayerHandler.getMove();
-
             if (move != null) {
                 // here we create a new move handler object and ask it to perform given move
                 // if it is valid, we confirm this move in both handlers
@@ -201,9 +173,7 @@ public class TheGame implements Runnable {
                 }
             }
 
-
             GameMessage attack = activePlayerHandler.getAttack();
-
             if (attack != null) {
                 // no need to validate, it's handled by GUI
                 new AttackHandler(board, activePlayer).attack(attack);
@@ -212,9 +182,7 @@ public class TheGame implements Runnable {
                 skillHandler.updateProtectedMonsters();
             }
 
-
             GameMessage skill = activePlayerHandler.getSkill();
-
             if (skill != null) {
                 skillHandler.addActiveTile(board[skill.srcY][skill.srcX]);
                 // no need to validate, too. However...
@@ -236,9 +204,7 @@ public class TheGame implements Runnable {
                 }
             }
 
-
             GameMessage rotation = activePlayerHandler.getRotation();
-
             if (rotation != null) {
                 board[rotation.srcY][rotation.srcX].getMonster().rotate(rotation.rotation);
                 playerOneHandler.performedRotation(rotation);
@@ -248,8 +214,8 @@ public class TheGame implements Runnable {
         }
 
         private void waitForEndTurn() {
-            if (activePlayerHandler.isTurnOver() != null) {
-
+            GameMessage message = activePlayerHandler.isTurnOver();
+            if (message != null) {
                 activePlayer.setIfCanMove(true);
                 activePlayer.setParalysed(false);
                 activePlayer.changeMana(2);
@@ -265,8 +231,8 @@ public class TheGame implements Runnable {
                     gameState = GameState.ONE_PLAYING;
                 }
 
-                playerOneHandler.confirmEndTurn();
-                playerTwoHandler.confirmEndTurn();
+                playerOneHandler.confirmEndTurn(message);
+                playerTwoHandler.confirmEndTurn(message);
             }
         }
     }

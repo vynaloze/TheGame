@@ -10,7 +10,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Properties;
 
 
 public class NetworkHandler implements PlayerHandlerInterface {
@@ -19,11 +18,11 @@ public class NetworkHandler implements PlayerHandlerInterface {
     private Socket clientSocket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
-    private GameMessage currentMove, currentAttack, currentSkill, currentRotation, isTurnOver;
-    private boolean isServer;
+    private GameMessage lastMessageReceived;
 
+    //------------------------------------------
+    // everything with opening and closing connection
     public NetworkHandler(TheGame theGame, boolean isServer, String ip, int port) {
-        this.isServer = isServer;
         if (isServer) {
             setServerConnection(port);
         } else {
@@ -67,59 +66,29 @@ public class NetworkHandler implements PlayerHandlerInterface {
         }
     }
 
-    private void readMessageFromSocket() {
-        GameMessage currentMessage = null;
+    //------------------------------------------
+    // methods for I/O of any in-game message
+    @Override
+    public GameMessage getMove() {
+        // take message from socket, once is enough for the whole cycle
         try {
-            currentMessage = (GameMessage) in.readObject();
+            lastMessageReceived = (GameMessage) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        if (currentMessage == null) {
-            return;
+
+        if (lastMessageReceived.type == GameMessage.TypeOfMessage.MOVE) {
+            return lastMessageReceived;
         }
-        switch (currentMessage.type) {
-            case ENDTURN:
-                isTurnOver = new GameMessage();
-                isTurnOver = currentMessage;
-                break;
-            case ATTACK:
-                currentAttack = currentMessage;
-                break;
-            case MOVE:
-                currentMove = new GameMessage();
-                currentMove = currentMessage;
-                break;
-            case ROTATION:
-                currentRotation = currentMessage;
-                break;
-            case SKILL:
-                currentSkill = currentMessage;
-                break;
-        }
-    }
-
-
-    /*public void processOutput(GameMessage message) {
-        try {
-            out.writeObject(message);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-
-    @Override
-    public GameMessage getMove() {
-          readMessageFromSocket();
-        //take it from the socket
-        GameMessage message = currentMove;
-        currentMove = null;
-        return message;
+        return null;
     }
 
     @Override
     public void performedMove(GameMessage move) {
-        //send it to the socket
+        //send it to the socket if it is not the one just received
+        if (lastMessageReceived == move) {
+            return;
+        }
         try {
             out.writeObject(move);
         } catch (IOException e) {
@@ -129,14 +98,18 @@ public class NetworkHandler implements PlayerHandlerInterface {
 
     @Override
     public GameMessage getAttack() {
-        GameMessage message = currentAttack;
-        currentAttack = null;
-        return message;
+        if (lastMessageReceived.type == GameMessage.TypeOfMessage.ATTACK) {
+            return lastMessageReceived;
+        }
+        return null;
     }
 
     @Override
     public void performedAttack(GameMessage position) {
-        try{
+        if (lastMessageReceived == position) {
+            return;
+        }
+        try {
             out.writeObject(position);
         } catch (IOException e) {
             e.printStackTrace();
@@ -145,14 +118,18 @@ public class NetworkHandler implements PlayerHandlerInterface {
 
     @Override
     public GameMessage getSkill() {
-        GameMessage message = currentSkill;
-        currentSkill = null;
-        return message;
+        if (lastMessageReceived.type == GameMessage.TypeOfMessage.SKILL) {
+            return lastMessageReceived;
+        }
+        return null;
     }
 
     @Override
     public void performedSkill(GameMessage position) {
-        try{
+        if (lastMessageReceived == position) {
+            return;
+        }
+        try {
             out.writeObject(position);
         } catch (IOException e) {
             e.printStackTrace();
@@ -161,14 +138,18 @@ public class NetworkHandler implements PlayerHandlerInterface {
 
     @Override
     public GameMessage getRotation() {
-        GameMessage message = currentRotation;
-        currentRotation = null;
-        return message;
+        if (lastMessageReceived.type == GameMessage.TypeOfMessage.ROTATION) {
+            return lastMessageReceived;
+        }
+        return null;
     }
 
     @Override
     public void performedRotation(GameMessage position) {
-        try{
+        if (lastMessageReceived == position) {
+            return;
+        }
+        try {
             out.writeObject(position);
         } catch (IOException e) {
             e.printStackTrace();
@@ -177,16 +158,17 @@ public class NetworkHandler implements PlayerHandlerInterface {
 
     @Override
     public GameMessage isTurnOver() {
- //todo: check       readMessageFromSocket();
-        GameMessage message = isTurnOver;
-        isTurnOver = null;
-        return message;
+        if (lastMessageReceived.type == GameMessage.TypeOfMessage.ENDTURN) {
+            return lastMessageReceived;
+        }
+        return null;
     }
 
     @Override
-    public void confirmEndTurn() {
-        GameMessage message = new GameMessage();
-        message.type = GameMessage.TypeOfMessage.ENDTURN;
+    public void confirmEndTurn(GameMessage message) {
+        if (lastMessageReceived == message) {
+            return;
+        }
         try {
             out.writeObject(message);
         } catch (IOException e) {
@@ -205,36 +187,12 @@ public class NetworkHandler implements PlayerHandlerInterface {
         return message;
     }
 
-    public void sendGameConditions(GameConditions message){
+    @Override
+    public void sendGameConditions(GameConditions message) {
         try {
             out.writeObject(message);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-
-    /*private class handleInputs implements Runnable {
-        ObjectInputStream in;
-        ActionsProtocol ap;
-
-        private handleInputs(ObjectInputStream in) {
-            this.in = in;
-            this.ap = new ActionsProtocol();
-        }
-
-        @Override
-        public void run() {
-            try {
-                GameMessage m = (GameMessage) in.readObject();
-                ap.processData(m);
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
-
-    public boolean isServer() {
-        return isServer;
     }
 }

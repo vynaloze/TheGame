@@ -44,12 +44,8 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
     private VBox leftVbox = new VBox();
     private VBox rightVbox = new VBox();
 
-    private NetworkHandler networkHandler;
-    private boolean online = false;
-
-
     private TheGame theGame;
-    private GameMessage currentMove, currentAttack, currentSkill, currentRotation, isTurnOver;
+    private volatile GameMessage currentMove, currentAttack, currentSkill, currentRotation, isTurnOver;
     private ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
     private TileGUI tilesGUI[][] = new TileGUI[SIZE][SIZE];
@@ -82,21 +78,16 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         primaryStage.setMaxWidth(WIDTH);
         primaryStage.setMaxHeight(HEIGHT);
 
-//        p1.setColor("orange");      //todo: properties
-//        p2.setColor("blue");
-
-        // readAndApplyProperties();
         createGUI(leftVbox);
         drawSidepanel(rightVbox);
 
         root.getChildren().addAll(leftVbox, rightVbox);
 
-        // refreshing itself at 10FPS
-        scheduler.scheduleAtFixedRate(this, 0, 100, TimeUnit.MILLISECONDS);
+        // refreshing itself at 59.9FPS
+        scheduler.scheduleAtFixedRate(this, 0, 16, TimeUnit.MILLISECONDS);
 
         primaryStage.setScene(new Scene(root, WIDTH, HEIGHT));
         primaryStage.show();
-
     }
 
     @Override
@@ -227,14 +218,13 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         return isTurnOver;
     }
 
-    public void confirmEndTurn() {
+    public void confirmEndTurn(GameMessage message) {
         isTurnOver = null;
     }
 
 
     //------------------------------------------
     // methods to handle movement
-
     private void tryToMove(int x, int y) {
         if (currentMove != null && tiles[y][x].getMonster() == null) {
             currentMove.destX = x;

@@ -53,9 +53,7 @@ public class Main extends Application {
         handleServerNetGame();
         handleClientNetGame();
         Button bOptions = new Button("Options");
-
-
-        //  bOptions.setOnAction(e->openOptionsWindow());
+        //bOptions.setOnAction(e->openOptionsWindow());
 
         root.getChildren().add(bOptions);
     }
@@ -63,10 +61,11 @@ public class Main extends Application {
     private void handleLocalGame() {
         Button bLocal = new Button("Play locally");
         bLocal.setOnAction(e -> {
-
+            // only default options for now
             gameConditions = new GameConditions();
             theGame = new TheGame(gameConditions);
 
+            // both players handled by one GUI instance
             PlayerHandlerInterface localHandler = new GUIHandler(theGame);
             theGame.setPlayers(localHandler, localHandler);
 
@@ -90,7 +89,6 @@ public class Main extends Application {
         hbox.getChildren().addAll(l, t, bServer);
         root.getChildren().add(hbox);
 
-        //todo: make this lambda a class
         bServer.setOnAction(e -> {
             gameConditions = new GameConditions();
             theGame = new TheGame(gameConditions);
@@ -128,7 +126,7 @@ public class Main extends Application {
         });
     }
 
-
+    // noy used at the moment
     private void openOptionsWindow() {
         Stage stage = new Stage();
         try {                               //fxml approach, to try sth new

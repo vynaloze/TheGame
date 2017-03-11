@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
-public class GameMessage implements Serializable{
+public class GameMessage implements Serializable {
     public int srcX;
     public int srcY;
     public int destX;

@@ -40,6 +40,7 @@ public class GameConditions implements Serializable {
         timeAdded = 10;
     }
 
+    // used when I add possibility to change options
     public GameConditions(ArrayList<MonsterID> monsterList, String playerOneName, String playerTwoName, String playerOneColor, String playerTwoColor, int timeOfGame, int timeAdded, HashSet<Coordinates> stones) {
         this.monsterList = monsterList;
         this.playerOneName = playerOneName;
