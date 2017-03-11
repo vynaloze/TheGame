@@ -4,25 +4,26 @@ import javafx.scene.image.ImageView;
 import thegamepackage.logic.Player;
 import thegamepackage.logic.SkillHandler;
 import thegamepackage.util.Coordinates;
-import thegamepackage.util.ID;
+import thegamepackage.util.MonsterID;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
 public abstract class Monster {
     protected Player player;
-    protected ID id;
+    protected MonsterID id;
     protected ImageView pic;
     protected int speed;
     protected ArrayList<Coordinates> attackedTiles = new ArrayList<>();
     private int currentRotation;
-    protected ArrayList<SkillHandler.SkillList> possibleSkills = new ArrayList<>();
+    protected HashSet<SkillHandler.SkillList> possibleSkills = new HashSet<>();
     private boolean underProtection = false;
     private boolean hasted = false;
 
-    public static Monster spawnNewMonster(ID id, Player player) {
+    public static Monster spawnNewMonster(MonsterID id, Player player) {
         switch (id) {
             case STONED_SLEEPWALKER:
                 return new StonedSleepwalker(player);
@@ -69,7 +70,7 @@ public abstract class Monster {
         }
     }
 
-    public ID getId() {
+    public MonsterID getId() {
         return id;
     }
 
@@ -97,7 +98,7 @@ public abstract class Monster {
         }
     }
 
-    public ArrayList<SkillHandler.SkillList> getPossibleSkills() {
+    public HashSet<SkillHandler.SkillList> getPossibleSkills() {
         return possibleSkills;
     }
 

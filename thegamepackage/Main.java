@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import thegamepackage.gui.GUIHandler;
+import thegamepackage.logic.GameConditions;
 import thegamepackage.logic.PlayerHandlerInterface;
 import thegamepackage.logic.TheGame;
 import thegamepackage.network.NetworkHandler;
@@ -25,6 +26,7 @@ import java.net.UnknownHostException;
 public class Main extends Application {
 
     private TheGame theGame;
+    private GameConditions gameConditions;
     private Thread thread;
     private VBox root = new VBox();
 
@@ -34,8 +36,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        theGame = new TheGame();
-
         drawMenu();
 
         primaryStage.setTitle("THE GAME");
@@ -63,8 +63,13 @@ public class Main extends Application {
     private void handleLocalGame() {
         Button bLocal = new Button("Play locally");
         bLocal.setOnAction(e -> {
+
+            gameConditions = new GameConditions();
+            theGame = new TheGame(gameConditions);
+
             PlayerHandlerInterface localHandler = new GUIHandler(theGame);
             theGame.setPlayers(localHandler, localHandler);
+
             thread = new Thread(theGame);
             thread.start();
         });
@@ -85,10 +90,17 @@ public class Main extends Application {
         hbox.getChildren().addAll(l, t, bServer);
         root.getChildren().add(hbox);
 
+        //todo: make this lambda a class
         bServer.setOnAction(e -> {
-            PlayerHandlerInterface local = new GUIHandler(theGame);
+            gameConditions = new GameConditions();
+            theGame = new TheGame(gameConditions);
+
             PlayerHandlerInterface client = new NetworkHandler(theGame, true, "", Integer.parseInt(t.getText()));
+            client.sendGameConditions(gameConditions);
+
+            PlayerHandlerInterface local = new GUIHandler(theGame);
             theGame.setPlayers(local, client);
+
             thread = new Thread(theGame);
             thread.start();
         });
@@ -104,8 +116,12 @@ public class Main extends Application {
         root.getChildren().add(hbox);
 
         bClient.setOnAction(e -> {
-            PlayerHandlerInterface local = new GUIHandler(theGame);
             PlayerHandlerInterface server = new NetworkHandler(theGame, false, t1.getText(), Integer.parseInt(t2.getText()));
+            gameConditions = server.getGameConditions();
+
+            theGame = new TheGame(gameConditions);
+            PlayerHandlerInterface local = new GUIHandler(theGame);
+
             theGame.setPlayers(server, local);
             thread = new Thread(theGame);
             thread.start();

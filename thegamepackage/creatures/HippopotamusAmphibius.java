@@ -5,7 +5,7 @@ import javafx.scene.image.ImageView;
 import thegamepackage.logic.Player;
 import thegamepackage.logic.SkillHandler;
 import thegamepackage.util.Coordinates;
-import thegamepackage.util.ID;
+import thegamepackage.util.MonsterID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -13,7 +13,7 @@ import thegamepackage.util.ID;
 public class HippopotamusAmphibius extends Monster {
 
     public HippopotamusAmphibius(Player player) {
-        this.id = ID.HIPPOPOTAMUS_AMPHIBIUS;
+        this.id = MonsterID.HIPPOPOTAMUS_AMPHIBIUS;
         this.player = player;
         this.speed = 2;
         this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("hippo.png")));

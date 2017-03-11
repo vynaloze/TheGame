@@ -5,7 +5,7 @@ import thegamepackage.creatures.Infernalist;
 import thegamepackage.creatures.LasiodoraParahybana;
 import thegamepackage.creatures.Monster;
 import thegamepackage.util.Coordinates;
-import thegamepackage.util.ID;
+import thegamepackage.util.MonsterID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -537,7 +537,7 @@ public class SkillHandler {
     private Tile findTileWithJesus() {
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles.length; j++) {
-                if (tiles[i][j].getMonster() != null && tiles[i][j].getMonster().getId() == ID.JESUS) {
+                if (tiles[i][j].getMonster() != null && tiles[i][j].getMonster().getId() == MonsterID.JESUS) {
                     return tiles[i][j];
                 }
             }

@@ -1,17 +1,11 @@
 package thegamepackage.logic;
 
 import thegamepackage.creatures.Monster;
-import thegamepackage.gui.GUIHandler;
-import thegamepackage.util.ID;
+import thegamepackage.util.Coordinates;
+import thegamepackage.util.MonsterID;
 import thegamepackage.util.GameMessage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Properties;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadLocalRandom;
@@ -22,11 +16,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class TheGame implements Runnable {
 
+    private GameConditions conditions;
+
     private final int SIZE = 8;
     private Tile[][] board = new Tile[SIZE][SIZE];
-    private int howManyStones;
-    private int time, timeAdded;
-    private ArrayList<ID> monsterList = new ArrayList<>();
 
     private GameTimer timer;
     private Player playerOne, playerTwo, activePlayer;
@@ -39,16 +32,19 @@ public class TheGame implements Runnable {
     private ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
 
-    public TheGame() {
+    public TheGame(GameConditions conditions) {
+        this.conditions = conditions;
+
         playerOne = new Player();
         playerTwo = new Player();
         activePlayer = playerOne;
 
-        readAndApplyProperties();
-        playerOne.setColor("orange");
-        playerTwo.setColor("blue");
+        playerOne.setName(conditions.getPlayerOneName());
+        playerTwo.setName(conditions.getPlayerTwoName());
+        playerOne.setColor(conditions.getPlayerOneColor());
+        playerTwo.setColor(conditions.getPlayerTwoColor());
 
-        timer = new GameTimer(time, timeAdded);
+        timer = new GameTimer(conditions.getTimeOfGame(), conditions.getTimeAdded());
 
         createNewBoard();
         spawnMonsters();
@@ -61,63 +57,24 @@ public class TheGame implements Runnable {
             }
         }
 
-        int alreadyStoned[][] = new int[howManyStones][2];
-
-        for (int i = 0; i < howManyStones; ) {
-            boolean thereIsAStoneOnThisTile = false;
-            int x = ThreadLocalRandom.current().nextInt(0, 8);
-            int y = ThreadLocalRandom.current().nextInt(0, 8);
-
-            // to avoid stone in a starting corner
-            if (x == 5 && y == 0) continue;
-            if (x == 6 && y == 0) continue;
-            if (x == 7 && y == 0) continue;
-            if (x == 6 && y == 1) continue;
-            if (x == 7 && y == 1) continue;
-            if (x == 7 && y == 2) continue;
-
-            if (x == 0 && y == 5) continue;
-            if (x == 0 && y == 6) continue;
-            if (x == 0 && y == 7) continue;
-            if (x == 1 && y == 6) continue;
-            if (x == 1 && y == 7) continue;
-            if (x == 2 && y == 7) continue;
-
-            //check for "doubled" position
-            for (int j = 0; j < i; j++) {
-                if (alreadyStoned[j][0] == x
-                        && alreadyStoned[j][1] == y) {
-                    thereIsAStoneOnThisTile = true;
-                }
-            }
-
-            if (!thereIsAStoneOnThisTile) {
-                alreadyStoned[i][0] = x;
-                alreadyStoned[i][1] = y;
-                board[x][y].makeNewStone();
-                i++;
-            }
+        for (Coordinates c: conditions.getStones()){
+            board[c.getY()][c.getX()].makeNewStone();
         }
     }
 
     private void spawnMonsters() {
+        ArrayList<MonsterID> list = conditions.getMonsterList();
         //just spawn the lower monsters
-        board[6][0].setMonster(Monster.spawnNewMonster(monsterList.get(0), playerOne));
-        board[7][0].setMonster(Monster.spawnNewMonster(monsterList.get(1), playerOne));
-        board[7][1].setMonster(Monster.spawnNewMonster(monsterList.get(2), playerOne));
+        board[6][0].setMonster(Monster.spawnNewMonster(list.get(0), playerOne));
+        board[7][0].setMonster(Monster.spawnNewMonster(list.get(1), playerOne));
+        board[7][1].setMonster(Monster.spawnNewMonster(list.get(2), playerOne));
         //spawn & rotate 180 degrees the upper monsters
-        board[0][6].setMonster(Monster.spawnNewMonster(monsterList.get(3), playerTwo));
+        board[0][6].setMonster(Monster.spawnNewMonster(list.get(3), playerTwo));
         board[0][6].getMonster().rotate(180);
-        board[0][7].setMonster(Monster.spawnNewMonster(monsterList.get(4), playerTwo));
+        board[0][7].setMonster(Monster.spawnNewMonster(list.get(4), playerTwo));
         board[0][7].getMonster().rotate(180);
-        board[1][7].setMonster(Monster.spawnNewMonster(monsterList.get(5), playerTwo));
+        board[1][7].setMonster(Monster.spawnNewMonster(list.get(5), playerTwo));
         board[1][7].getMonster().rotate(180);
-    }
-
-    private void randomizeMonsters() {
-        // we always get first 6 numbers of this list, so after shuffling they are random and unique
-        monsterList.addAll(EnumSet.allOf(ID.class));
-        Collections.shuffle(monsterList);
     }
 
     public void setPlayers(PlayerHandlerInterface playerOneHandler, PlayerHandlerInterface playerTwoHandler) {
@@ -146,9 +103,9 @@ public class TheGame implements Runnable {
         return board;
     }
 
-    private void readAndApplyProperties() {
-     //   if (playerOneHandler.getClass().equals(GUIHandler.class)) {
-            // this means we play locally or host a server - so this instance chooses options, monsters
+   /* private void readAndApplyProperties(TypeOfGame type) {
+        if (type == TypeOfGame.LOCAL || type == TypeOfGame.SERVER) {
+            // first option means we play locally OR host a server - so this instance chooses options, monsters
             randomizeMonsters();
             try {
                 File file = new File("game.properties");
@@ -169,13 +126,20 @@ public class TheGame implements Runnable {
                 playerTwo.setName("DRU61");
                 time = 3;
                 timeAdded = 10;
-   //         }
+            }
+            // if we are playing online, send initial data to client
+            if(type== TypeOfGame.SERVER){
+
+            }
+//            // watch out. This is "else" clause fo the first "if" in this function
    //     } else {
-            // this means we are a client - so we ask server for options
-            GameMessage message = playerOneHandler.getInitialProperties();
-   //         //todo - apply that
+            // the second option means we are a client - so we ask server for options
+
+       //     Properties message = playerOneHandler.getInitialProperties();
+            //         //todo - apply that
         }
-    }
+    }*/
+
 
     @Override
     public void run() {
@@ -187,6 +151,7 @@ public class TheGame implements Runnable {
     public void stopGame() {
         timer.stop();
         scheduler.shutdown();
+        //todo other "closing everything" shit
     }
 
     private class GameFlow implements Runnable {
@@ -199,7 +164,7 @@ public class TheGame implements Runnable {
         }
 
         private void checkForWinner() {
-            // check if someone won by elemination
+            // check if someone won by elimination
             if (playerOne.getMonstersAlive() == 0) {
                 gameState = GameState.ONE_ELEMINATED;
                 stopGame();
@@ -283,7 +248,7 @@ public class TheGame implements Runnable {
         }
 
         private void waitForEndTurn() {
-            if (activePlayerHandler.isTurnOver() !=null) {
+            if (activePlayerHandler.isTurnOver() != null) {
 
                 activePlayer.setIfCanMove(true);
                 activePlayer.setParalysed(false);

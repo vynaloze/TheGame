@@ -1,5 +1,6 @@
 package thegamepackage.network;
 
+import thegamepackage.logic.GameConditions;
 import thegamepackage.logic.PlayerHandlerInterface;
 import thegamepackage.logic.TheGame;
 import thegamepackage.util.GameMessage;
@@ -9,17 +10,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Properties;
 
 
 public class NetworkHandler implements PlayerHandlerInterface {
 
-private ServerSocket serverSocket;
-private Socket clientSocket;
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private GameMessage currentMove, currentAttack, currentSkill, currentRotation, isTurnOver;
+    private boolean isServer;
 
     public NetworkHandler(TheGame theGame, boolean isServer, String ip, int port) {
+        this.isServer = isServer;
         if (isServer) {
             setServerConnection(port);
         } else {
@@ -27,7 +31,7 @@ private Socket clientSocket;
         }
     }
 
-    public void closeConnection(){
+    public void closeConnection() {
         try {
             out.close();
             in.close();
@@ -63,17 +67,17 @@ private Socket clientSocket;
         }
     }
 
-    private void readMessageFromSocket(){
+    private void readMessageFromSocket() {
         GameMessage currentMessage = null;
         try {
             currentMessage = (GameMessage) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        if(currentMessage == null){
+        if (currentMessage == null) {
             return;
         }
-        switch(currentMessage.type){
+        switch (currentMessage.type) {
             case ENDTURN:
                 isTurnOver = new GameMessage();
                 isTurnOver = currentMessage;
@@ -106,7 +110,7 @@ private Socket clientSocket;
 
     @Override
     public GameMessage getMove() {
-      //  readMessageFromSocket();
+          readMessageFromSocket();
         //take it from the socket
         GameMessage message = currentMove;
         currentMove = null;
@@ -125,56 +129,88 @@ private Socket clientSocket;
 
     @Override
     public GameMessage getAttack() {
-        return currentAttack;
+        GameMessage message = currentAttack;
+        currentAttack = null;
+        return message;
     }
 
     @Override
     public void performedAttack(GameMessage position) {
-
-    }
-
-    @Override
-    public GameMessage getSkill() {
-        return null;
-    }
-
-    @Override
-    public void performedSkill(GameMessage position) {
-
-    }
-
-    @Override
-    public GameMessage getRotation() {
-        return null;
-    }
-
-    @Override
-    public void performedRotation(GameMessage position) {
-
-    }
-
-    @Override
-    public GameMessage isTurnOver() {
-        readMessageFromSocket();
-GameMessage message = isTurnOver;
-isTurnOver = null;
-        return
-                message;
-    }
-
-    @Override
-    public void confirmEndTurn(){
-        try {
-            out.writeObject(isTurnOver);
-//            isTurnOver = null;
+        try{
+            out.writeObject(position);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public GameMessage getInitialProperties() {
-        return null;
+    public GameMessage getSkill() {
+        GameMessage message = currentSkill;
+        currentSkill = null;
+        return message;
+    }
+
+    @Override
+    public void performedSkill(GameMessage position) {
+        try{
+            out.writeObject(position);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public GameMessage getRotation() {
+        GameMessage message = currentRotation;
+        currentRotation = null;
+        return message;
+    }
+
+    @Override
+    public void performedRotation(GameMessage position) {
+        try{
+            out.writeObject(position);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public GameMessage isTurnOver() {
+ //todo: check       readMessageFromSocket();
+        GameMessage message = isTurnOver;
+        isTurnOver = null;
+        return message;
+    }
+
+    @Override
+    public void confirmEndTurn() {
+        GameMessage message = new GameMessage();
+        message.type = GameMessage.TypeOfMessage.ENDTURN;
+        try {
+            out.writeObject(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public GameConditions getGameConditions() {
+        GameConditions message = null;
+        try {
+            message = (GameConditions) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
+
+    public void sendGameConditions(GameConditions message){
+        try {
+            out.writeObject(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -197,4 +233,8 @@ isTurnOver = null;
             }
         }
     }*/
+
+    public boolean isServer() {
+        return isServer;
+    }
 }

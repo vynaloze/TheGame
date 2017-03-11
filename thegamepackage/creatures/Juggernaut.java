@@ -5,7 +5,7 @@ import javafx.scene.image.ImageView;
 import thegamepackage.logic.Player;
 import thegamepackage.logic.SkillHandler;
 import thegamepackage.util.Coordinates;
-import thegamepackage.util.ID;
+import thegamepackage.util.MonsterID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -13,7 +13,7 @@ import thegamepackage.util.ID;
 public class Juggernaut extends Monster {
 
     public Juggernaut(Player player) {
-        this.id = ID.JUGGERNAUT;
+        this.id = MonsterID.JUGGERNAUT;
         this.player = player;
         this.speed = 1;
         this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("juggernaut.png")));

@@ -5,7 +5,7 @@ import javafx.scene.image.ImageView;
 import thegamepackage.logic.Player;
 import thegamepackage.logic.SkillHandler;
 import thegamepackage.util.Coordinates;
-import thegamepackage.util.ID;
+import thegamepackage.util.MonsterID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -14,7 +14,7 @@ public class Cobra extends Monster {
     private static int fields = 0;
 
     public Cobra(Player player) {
-        this.id = ID.COBRA;
+        this.id = MonsterID.COBRA;
         this.player = player;
         this.speed = 3;
         this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("cobra.png")));

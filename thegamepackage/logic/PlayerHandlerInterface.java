@@ -2,6 +2,8 @@ package thegamepackage.logic;
 
 import thegamepackage.util.GameMessage;
 
+import java.util.Properties;
+
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
@@ -22,5 +24,6 @@ public interface PlayerHandlerInterface {
     GameMessage isTurnOver();
     void confirmEndTurn();
 
-    GameMessage getInitialProperties();
+    GameConditions getGameConditions();
+    void sendGameConditions(GameConditions message);
 }

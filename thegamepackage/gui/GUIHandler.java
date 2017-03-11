@@ -24,6 +24,7 @@ import thegamepackage.network.NetworkHandler;
 import thegamepackage.util.Coordinates;
 import thegamepackage.util.GameMessage;
 
+import java.util.Properties;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -219,7 +220,7 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
     // methods to process new turn
     private void nextTurn() {
         isTurnOver = new GameMessage();
-        isTurnOver.type = GameMessage.Type.ENDTURN;
+        isTurnOver.type = GameMessage.TypeOfMessage.ENDTURN;
     }
 
     public GameMessage isTurnOver() {
@@ -243,7 +244,7 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         currentMove = new GameMessage();
         currentMove.srcX = x;
         currentMove.srcY = y;
-        currentMove.type = GameMessage.Type.MOVE;
+        currentMove.type = GameMessage.TypeOfMessage.MOVE;
     }
 
     public GameMessage getMove() {
@@ -282,7 +283,7 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         currentAttack = new GameMessage();
         currentAttack.srcX = x;
         currentAttack.srcY = y;
-        currentAttack.type = GameMessage.Type.ATTACK;
+        currentAttack.type = GameMessage.TypeOfMessage.ATTACK;
     }
 
     public GameMessage getAttack() {
@@ -337,7 +338,7 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         currentRotation.srcX = x;
         currentRotation.srcY = y;
         currentRotation.rotation = degree;
-        currentRotation.type = GameMessage.Type.ROTATION;
+        currentRotation.type = GameMessage.TypeOfMessage.ROTATION;
     }
 
     public GameMessage getRotation() {
@@ -364,7 +365,7 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         currentSkill.srcX = x;
         currentSkill.srcY = y;
         currentSkill.skill = skill;
-        currentSkill.type = GameMessage.Type.SKILL;
+        currentSkill.type = GameMessage.TypeOfMessage.SKILL;
     }
 
     public GameMessage getSkill() {
@@ -377,9 +378,15 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
 
 
     //------------------------------------------
-    // not used method from PlayerHandlerInterface
+    // not used methods from PlayerHandlerInterface
+
     @Override
-    public GameMessage getInitialProperties() {
+    public GameConditions getGameConditions() {
         return null;
+    }
+
+    @Override
+    public void sendGameConditions(GameConditions message) {
+
     }
 }

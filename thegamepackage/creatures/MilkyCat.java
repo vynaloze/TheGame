@@ -5,7 +5,7 @@ import javafx.scene.image.ImageView;
 import thegamepackage.logic.Player;
 import thegamepackage.logic.SkillHandler;
 import thegamepackage.util.Coordinates;
-import thegamepackage.util.ID;
+import thegamepackage.util.MonsterID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -13,7 +13,7 @@ import thegamepackage.util.ID;
 public class MilkyCat extends Monster {
 
     public MilkyCat (Player player){
-        this.id = ID.MILKY_CAT;
+        this.id = MonsterID.MILKY_CAT;
         this.player = player;
         this.speed = 3;
         this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("milky_cat.png")));

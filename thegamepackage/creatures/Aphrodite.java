@@ -5,7 +5,7 @@ import javafx.scene.image.ImageView;
 import thegamepackage.logic.Player;
 import thegamepackage.logic.SkillHandler;
 import thegamepackage.util.Coordinates;
-import thegamepackage.util.ID;
+import thegamepackage.util.MonsterID;
 
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
@@ -13,7 +13,7 @@ import thegamepackage.util.ID;
 public class Aphrodite extends Monster {
 
     public Aphrodite(Player player) {
-        this.id = ID.APHRODITE;
+        this.id = MonsterID.APHRODITE;
         this.player = player;
         this.speed = 3;
         this.pic = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("afrodyta.png")));

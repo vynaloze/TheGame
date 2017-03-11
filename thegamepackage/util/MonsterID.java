@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Copyright (c) 2016 by Piotr Pawluk. All rights reserved.
  */
-public enum ID {
+public enum MonsterID {
     STONED_SLEEPWALKER, BENEDICT_XVI, ANDRZEJ_DUDA, BLUE_MAGE, LAWNMOVER_OPERATOR, JESUS,
     INFERNALIST, JUGGERNAUT, LASIODORA_PARAHYBANA, HUNTER, MILKY_CAT, CRAZY_DEMON,
     DONALD_TRUMP, HIPPOPOTAMUS_AMPHIBIUS, APHRODITE, CTHULHU, FLUFFY_UNICORN,
@@ -17,7 +17,7 @@ public enum ID {
         return super.toString().replace("_", " ");
     }
 
-    public static ID randomID() {
-        return ID.values()[ThreadLocalRandom.current().nextInt(ID.values().length)];
+    public static MonsterID randomID() {
+        return MonsterID.values()[ThreadLocalRandom.current().nextInt(MonsterID.values().length)];
     }
 }
