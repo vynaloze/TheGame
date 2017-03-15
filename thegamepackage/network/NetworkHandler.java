@@ -76,7 +76,6 @@ public class NetworkHandler implements PlayerHandlerInterface {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-
         if (lastMessageReceived.type == GameMessage.TypeOfMessage.MOVE) {
             return lastMessageReceived;
         }
@@ -125,7 +124,7 @@ public class NetworkHandler implements PlayerHandlerInterface {
     }
 
     @Override
-    public void performedSkill(GameMessage position) {
+    public void performedSkill(GameMessage position, String player) {
         if (lastMessageReceived == position) {
             return;
         }
@@ -166,6 +165,26 @@ public class NetworkHandler implements PlayerHandlerInterface {
 
     @Override
     public void confirmEndTurn(GameMessage message) {
+        if (lastMessageReceived == message) {
+            return;
+        }
+        try {
+            out.writeObject(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public GameMessage getChatMessage() {
+        if (lastMessageReceived.type == GameMessage.TypeOfMessage.CHAT) {
+            return lastMessageReceived;
+        }
+        return null;
+    }
+
+    @Override
+    public void sendChatMessage(GameMessage message, String player) {
         if (lastMessageReceived == message) {
             return;
         }

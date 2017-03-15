@@ -31,7 +31,7 @@ public class SkillHandler {
         }
     }
 
-    public void addActiveTile(Tile tileWithActiveMonster){
+    public void addActiveTile(Tile tileWithActiveMonster) {
         this.tileWithActiveMonster = tileWithActiveMonster;
         this.rotation = convertRotation(tileWithActiveMonster.getMonster().getCurrentRotation());
         this.attackHandler = new AttackHandler(tiles, tileWithActiveMonster.getMonster().getPlayer());
@@ -272,12 +272,6 @@ public class SkillHandler {
         if (findOpponentPlayer() != null) {
             findOpponentPlayer().setParalysed(true);
             tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.PARALYSE.getCost());
-
-//todo            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//            alert.setTitle("To your information");
-//            alert.setHeaderText(null);
-//            alert.setContentText(tileWithActiveMonster.getMonster().getPlayer().getName() + " used PARALYSE!");
-//            alert.showAndWait();
         }
     }
 
@@ -353,12 +347,6 @@ public class SkillHandler {
     private void useHaste() {
         tileWithActiveMonster.getMonster().setHasted(true);
         tileWithActiveMonster.getMonster().getPlayer().changeMana(-SkillList.HASTE.getCost());
-
-//todo        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle("To your information");
-//        alert.setHeaderText(null);
-//        alert.setContentText(tileWithActiveMonster.getMonster().getPlayer().getName() + " used HASTE!");
-//        alert.showAndWait();
     }
 
     private void useLightning() {
@@ -393,7 +381,7 @@ public class SkillHandler {
                 found = true;
             }
         }
-        if(!found){
+        if (!found) {
             return;
         }
 
@@ -568,6 +556,10 @@ public class SkillHandler {
 
         @Override
         public String toString() {
+            return super.toString().replace("_", " ").replace("4", "");
+        }
+
+        public String toStringWithComments() {
             return super.toString().toLowerCase().replace("_", " ").replace("4", " (passive)") + "  cost: " + cost;
         }
     }

@@ -5,12 +5,10 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -20,11 +18,11 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import thegamepackage.creatures.Monster;
 import thegamepackage.logic.*;
-import thegamepackage.network.NetworkHandler;
 import thegamepackage.util.Coordinates;
 import thegamepackage.util.GameMessage;
 
-import java.util.Properties;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 public class GUIHandler extends Application implements PlayerHandlerInterface, Runnable {
 
     private final int SIZE = 8;
-    private final int HEIGHT = 950;
+    private final int HEIGHT = 1000;
     private final int WIDTH = 1250;
     private Tile tiles[][];        //todo: organise this shit
 
@@ -45,12 +43,13 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
     private VBox rightVbox = new VBox();
 
     private TheGame theGame;
-    private volatile GameMessage currentMove, currentAttack, currentSkill, currentRotation, isTurnOver;
+    private GameMessage currentMove, currentAttack, currentSkill, currentRotation, isTurnOver, currentChat;
+    private String chatHistory = "";
     private ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
     private TileGUI tilesGUI[][] = new TileGUI[SIZE][SIZE];
 
-    private Label timeLabel, manaLabel, monsterLabel;
+    private Label timeLabel, manaLabel, monsterLabel, chatLabel;
 
 
     public GUIHandler(TheGame theGame) {
@@ -79,6 +78,7 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         primaryStage.setMaxHeight(HEIGHT);
 
         createGUI(leftVbox);
+        drawChat(leftVbox);
         drawSidepanel(rightVbox);
 
         root.getChildren().addAll(leftVbox, rightVbox);
@@ -125,6 +125,30 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         vbox.getChildren().add(tilepane);
     }
 
+
+    //------------------------------------------
+    //method to draw chat panel
+    private void drawChat(VBox vBox) {
+        chatLabel = new Label("");
+        ScrollPane sp = new ScrollPane(chatLabel);
+
+        // vertical bar wil be always visible, horizontal - as needed
+        sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+
+        // this is to make scrollpane scroll down automatically when label is updated with new string
+        sp.vvalueProperty().bind(chatLabel.heightProperty());
+
+        TextField tx = new TextField();
+        tx.setOnKeyPressed((event) -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                saveMessageFromTextField(tx.getText());
+                tx.clear();
+            }
+        });
+
+        vBox.getChildren().addAll(sp, tx);
+    }
 
     //------------------------------------------
     //methods to draw side panel
@@ -188,23 +212,49 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
     @Override
     public void run() {
         GameTimer timer = theGame.getTimer();
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                // refresh the board
                 for (int i = 0; i < SIZE; i++) {
                     for (int j = 0; j < SIZE; j++) {
                         tilesGUI[i][j].refresh();
                     }
                 }
+                // refresh the timer
                 timeLabel.setText(timer.getTimeRemaining1() / 6000 + ":" + timer.sec(timer.getTimeRemaining1() / 100) + "." + timer.milisec(timer.getTimeRemaining1())
                         + "  -  "
                         + timer.getTimeRemaining2() / 6000 + ":" + timer.sec(timer.getTimeRemaining2() / 100) + "." + timer.milisec(timer.getTimeRemaining2()));
+                // refresh monster and mana counter
                 monsterLabel.setText(theGame.getPlayerOne().getMonstersAlive() + " - " + theGame.getPlayerTwo().getMonstersAlive());
                 manaLabel.setText(theGame.getPlayerOne().getMana() + " - " + theGame.getPlayerTwo().getMana());
+                // check for game end
+                checkForGameEnd();
+                // refresh chat mesages
+                chatLabel.setText(chatHistory);
             }
         });
+    }
 
-        //todo: game state if end
+    private void checkForGameEnd() {
+        TheGame.GameState gameState = theGame.getGameState();
+        if (gameState == TheGame.GameState.ONE_ELEMINATED) {
+            chatHistory += chatHistory += "\n " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS)
+                    + " [Game Master] OUR BLOODY ADVENTURE HAS CAME TO THE END... " + theGame.getPlayerTwo() + "HAS KILLED ALL HOSTILE MONSTERS AND WON THE GAME! GG EZ";
+        }
+        if (gameState == TheGame.GameState.TWO_ELEMINATED) {
+            chatHistory += chatHistory += "\n " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS)
+                    + " [Game Master] OUR BLOODY ADVENTURE HAS CAME TO THE END... " + theGame.getPlayerOne() + "HAS KILLED ALL HOSTILE MONSTERS AND WON THE GAME! GG EZ";
+        }
+        if (gameState == TheGame.GameState.ONE_NOTIME) {
+            chatHistory += chatHistory += "\n " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS)
+                    + " [Game Master] I'VE JUST FALLEN ASLEEP... " + theGame.getPlayerTwo() + "HAS WON THE GAME BECAUSE HE WAS A SLIGHTLY FASTER CLICKER! EZ WIN, EZ LIFE";
+        }
+        if (gameState == TheGame.GameState.TWO_NOTIME) {
+            chatHistory += chatHistory += "\n " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS)
+                    + " [Game Master] I'VE JUST FALLEN ASLEEP... " + theGame.getPlayerOne() + "HAS WON THE GAME BECAUSE HE WAS A SLIGHTLY FASTER CLICKER! EZ WIN, EZ LIFE";
+        }
     }
 
     //------------------------------------------
@@ -214,10 +264,12 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         isTurnOver.type = GameMessage.TypeOfMessage.ENDTURN;
     }
 
+    @Override
     public GameMessage isTurnOver() {
         return isTurnOver;
     }
 
+    @Override
     public void confirmEndTurn(GameMessage message) {
         isTurnOver = null;
     }
@@ -237,10 +289,12 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         currentMove.type = GameMessage.TypeOfMessage.MOVE;
     }
 
+    @Override
     public GameMessage getMove() {
         return currentMove;
     }
 
+    @Override
     public void performedMove(GameMessage move) {
         currentMove = null;
     }
@@ -276,10 +330,12 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         currentAttack.type = GameMessage.TypeOfMessage.ATTACK;
     }
 
+    @Override
     public GameMessage getAttack() {
         return currentAttack;
     }
 
+    @Override
     public void performedAttack(GameMessage position) {
         currentAttack = null;
     }
@@ -307,7 +363,7 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
             }
 
             for (SkillHandler.SkillList s : m.getPossibleSkills()) {
-                MenuItem item = new MenuItem(s.toString());
+                MenuItem item = new MenuItem(s.toStringWithComments());
                 if (m.getPlayer() != theGame.getActivePlayer()) {
                     item.setStyle("-fx-text-fill: grey;");
                 } else if (m.getPlayer().getMana() >= s.getCost()) {
@@ -331,10 +387,12 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         currentRotation.type = GameMessage.TypeOfMessage.ROTATION;
     }
 
+    @Override
     public GameMessage getRotation() {
         return currentRotation;
     }
 
+    @Override
     public void performedRotation(GameMessage position) {
         currentRotation = null;
     }
@@ -358,18 +416,43 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         currentSkill.type = GameMessage.TypeOfMessage.SKILL;
     }
 
+    @Override
     public GameMessage getSkill() {
         return currentSkill;
     }
 
-    public void performedSkill(GameMessage position) {
+    @Override
+    public void performedSkill(GameMessage position, String player) {
         currentSkill = null;
+        // add message in chat informing about skill being used
+        chatHistory += "\n " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS)
+                + " [Game Master] I GUESS YOU'D LIKE TO KNOW THAT " + player + " USED " + position.skill.toString() + "!";
     }
 
+    //------------------------------------------
+    // methods to handle chat messages
+    private void saveMessageFromTextField(String text) {
+        if (!text.isEmpty()) {
+            currentChat = new GameMessage();
+            currentChat.type = GameMessage.TypeOfMessage.CHAT;
+            currentChat.chatMessage = text;
+        }
+    }
+
+    @Override
+    public GameMessage getChatMessage() {
+        return currentChat;
+    }
+
+    @Override
+    public void sendChatMessage(GameMessage message, String player) {
+        currentChat = null;
+        // after a new line: "TIME [PLAYER NAME] MESSAGE"
+        chatHistory += "\n " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS) + " [" + player + "] " + message.chatMessage;
+    }
 
     //------------------------------------------
     // not used methods from PlayerHandlerInterface
-
     @Override
     public GameConditions getGameConditions() {
         return null;

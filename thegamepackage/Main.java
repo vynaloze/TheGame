@@ -53,7 +53,7 @@ public class Main extends Application {
         handleServerNetGame();
         handleClientNetGame();
         Button bOptions = new Button("Options");
-        //bOptions.setOnAction(e->openOptionsWindow());
+        bOptions.setOnAction(e -> openOptionsWindow());
 
         root.getChildren().add(bOptions);
     }
@@ -61,7 +61,7 @@ public class Main extends Application {
     private void handleLocalGame() {
         Button bLocal = new Button("Play locally");
         bLocal.setOnAction(e -> {
-            // only default options for now
+            // read and apply options
             gameConditions = new GameConditions();
             theGame = new TheGame(gameConditions);
 
@@ -115,6 +115,7 @@ public class Main extends Application {
 
         bClient.setOnAction(e -> {
             PlayerHandlerInterface server = new NetworkHandler(theGame, false, t1.getText(), Integer.parseInt(t2.getText()));
+            // get options from a host
             gameConditions = server.getGameConditions();
 
             theGame = new TheGame(gameConditions);
@@ -126,11 +127,10 @@ public class Main extends Application {
         });
     }
 
-    // noy used at the moment
     private void openOptionsWindow() {
         Stage stage = new Stage();
         try {                               //fxml approach, to try sth new
-            Parent parent = FXMLLoader.load(getClass().getResource("../options/options_scene.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("./options/options_scene.fxml"));
             stage.setTitle("Options");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(root.getScene().getWindow());

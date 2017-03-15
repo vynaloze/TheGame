@@ -3,11 +3,11 @@ package thegamepackage.logic;
 import thegamepackage.util.Coordinates;
 import thegamepackage.util.MonsterID;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -26,30 +26,33 @@ public class GameConditions implements Serializable {
 
     private HashSet<Coordinates> stones;
 
-
     public GameConditions() {
+        int howManyStones = 8;
+        try {
+            File file = new File("game.properties");
+            FileInputStream fileIn = new FileInputStream(file);
+            Properties properties = new Properties();
+            properties.load(fileIn);
+            fileIn.close();
+
+            howManyStones = Integer.parseInt(properties.getProperty("stones"));
+            this.playerOneName = properties.getProperty("player1");
+            this.playerTwoName = properties.getProperty("player2");
+            this.timeOfGame = Integer.parseInt(properties.getProperty("time"));
+            this.timeAdded = Integer.parseInt(properties.getProperty("time_added"));
+
+        } catch (IOException x) {
+            // default values
+            this.playerOneName = "P13RV52Y";
+            this.playerTwoName = "DRU61";
+            this.timeOfGame = 3;
+            this.timeAdded = 10;
+        }
+        // maybe I'll add changeability of this later
+        this.playerOneColor = "orange";
+        this.playerTwoColor = "blue";
         randomizeMonsters();
-        randomizeStones(8);
-
-        // default values of others
-        playerOneName = "P13RV52Y";
-        playerTwoName = "DRU61";
-        playerOneColor = "orange";
-        playerTwoColor = "blue";
-        timeOfGame = 3;
-        timeAdded = 10;
-    }
-
-    // used when I add possibility to change options
-    public GameConditions(ArrayList<MonsterID> monsterList, String playerOneName, String playerTwoName, String playerOneColor, String playerTwoColor, int timeOfGame, int timeAdded, HashSet<Coordinates> stones) {
-        this.monsterList = monsterList;
-        this.playerOneName = playerOneName;
-        this.playerTwoName = playerTwoName;
-        this.playerOneColor = playerOneColor;
-        this.playerTwoColor = playerTwoColor;
-        this.timeOfGame = timeOfGame;
-        this.timeAdded = timeAdded;
-        this.stones = stones;
+        randomizeStones(howManyStones);
     }
 
     public ArrayList<MonsterID> getMonsterList() {

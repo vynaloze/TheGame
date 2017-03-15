@@ -14,8 +14,9 @@ public class GameMessage implements Serializable {
     public int destY;
     public SkillHandler.SkillList skill;
     public int rotation;
+    public String chatMessage;
     public TypeOfMessage type;
 
-    public enum TypeOfMessage {MOVE, ATTACK, SKILL, ROTATION, ENDTURN}
+    public enum TypeOfMessage {MOVE, ATTACK, SKILL, ROTATION, ENDTURN, CHAT}
 
 }

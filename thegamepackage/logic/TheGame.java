@@ -105,6 +105,10 @@ public class TheGame implements Runnable {
         return board;
     }
 
+    public GameState getGameState() {
+        return gameState;
+    }
+
     //------------------------------------------
     // and here is the hearth of the game
     @Override
@@ -133,7 +137,9 @@ public class TheGame implements Runnable {
         @Override
         public void run() {
             checkForWinner();
+
             waitForActions();
+            waitForChatMessage();
             waitForEndTurn();
         }
 
@@ -191,16 +197,16 @@ public class TheGame implements Runnable {
                 if (SkillHandler.SkillList.isNonInstantSkill(skill.skill)) {
                     if (skill.destX != -1) {
                         skillHandler.useSkill(skill.skill, skill.destX, skill.destY);
-                        playerOneHandler.performedSkill(skill);
-                        playerTwoHandler.performedSkill(skill);
+                        playerOneHandler.performedSkill(skill, activePlayer.getName());
+                        playerTwoHandler.performedSkill(skill, activePlayer.getName());
                     }
                 }
                 // if there is one of other "simple" skills, there are no problems
                 // (unnecessary parameters x & y, but I'm too lazy to deal with it)
                 else {
                     skillHandler.useSkill(skill.skill, -1, -1);
-                    playerOneHandler.performedSkill(skill);
-                    playerTwoHandler.performedSkill(skill);
+                    playerOneHandler.performedSkill(skill, activePlayer.getName());
+                    playerTwoHandler.performedSkill(skill, activePlayer.getName());
                 }
             }
 
@@ -211,6 +217,26 @@ public class TheGame implements Runnable {
                 playerTwoHandler.performedRotation(rotation);
                 skillHandler.updateProtectedMonsters();
             }
+        }
+
+        private void waitForChatMessage() {
+            GameMessage message = activePlayerHandler.getChatMessage();
+            if (message != null) {
+                String name;
+                if (activePlayerHandler == playerOneHandler) {
+                    name = playerOne.getName();
+                } else {
+                    name = playerTwo.getName();
+                }
+                playerOneHandler.sendChatMessage(message, name);
+                playerTwoHandler.sendChatMessage(message, name);
+            }
+            //todo: allow player to write messages even if it's not his turn
+//             message = playerTwoHandler.getChatMessage();
+//            if(message != null){
+//                playerOneHandler.sendChatMessage(message, playerTwo.getName());
+//                playerTwoHandler.sendChatMessage(message, playerTwo.getName());
+//            }
         }
 
         private void waitForEndTurn() {

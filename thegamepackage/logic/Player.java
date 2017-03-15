@@ -6,7 +6,7 @@ package thegamepackage.logic;
 public class Player {
     private String name;
     private String color;
-    private int mana = 10;      //todo: mana 0
+    private int mana = 0;
     private int monstersAlive = 3;
     private boolean canMove = true;
     private boolean paralysed = false;

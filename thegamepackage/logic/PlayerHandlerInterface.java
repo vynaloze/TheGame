@@ -14,13 +14,16 @@ public interface PlayerHandlerInterface {
     void performedAttack(GameMessage position);
 
     GameMessage getSkill();
-    void performedSkill(GameMessage position);
+    void performedSkill(GameMessage position, String player);
 
     GameMessage getRotation();
     void performedRotation(GameMessage position);
 
     GameMessage isTurnOver();
     void confirmEndTurn(GameMessage message);
+
+    GameMessage getChatMessage();
+    void sendChatMessage(GameMessage message, String player);
 
     GameConditions getGameConditions();
     void sendGameConditions(GameConditions message);
