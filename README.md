@@ -9,4 +9,10 @@ There are only two persons in the world who play this game so writing down rules
 
 ----------
 
-I'm completely rewriting the structure of the game in order to provide online matches.
+Features: PvP on one computer or via LAN.
+
+Plans: implement AI, playing using central server in some cloud environment.
+
+--------------
+
+I think I'll stop with this project for a moment as I'm simply not having fun. It's high time to try something new I guess.

@@ -261,7 +261,7 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
     // methods to process new turn
     private void nextTurn() {
         isTurnOver = new GameMessage();
-        isTurnOver.type = GameMessage.TypeOfMessage.ENDTURN;
+        isTurnOver.setType(GameMessage.TypeOfMessage.ENDTURN);
     }
 
     @Override
@@ -279,14 +279,14 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
     // methods to handle movement
     private void tryToMove(int x, int y) {
         if (currentMove != null && tiles[y][x].getMonster() == null) {
-            currentMove.destX = x;
-            currentMove.destY = y;
+            currentMove.setDestX(x);
+            currentMove.setDestY(y);
             return;
         }
         currentMove = new GameMessage();
-        currentMove.srcX = x;
-        currentMove.srcY = y;
-        currentMove.type = GameMessage.TypeOfMessage.MOVE;
+        currentMove.setSrcX(x);
+        currentMove.setSrcY(y);
+        currentMove.setType(GameMessage.TypeOfMessage.MOVE);
     }
 
     @Override
@@ -325,9 +325,9 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
 
     private void tryToAttack(int x, int y) {
         currentAttack = new GameMessage();
-        currentAttack.srcX = x;
-        currentAttack.srcY = y;
-        currentAttack.type = GameMessage.TypeOfMessage.ATTACK;
+        currentAttack.setSrcX(x);
+        currentAttack.setSrcY(y);
+        currentAttack.setType(GameMessage.TypeOfMessage.ATTACK);
     }
 
     @Override
@@ -381,10 +381,10 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
 
     private void tryToRotate(int x, int y, int degree) {
         currentRotation = new GameMessage();
-        currentRotation.srcX = x;
-        currentRotation.srcY = y;
-        currentRotation.rotation = degree;
-        currentRotation.type = GameMessage.TypeOfMessage.ROTATION;
+        currentRotation.setSrcX(x);
+        currentRotation.setSrcY(y);
+        currentRotation.setRotation(degree);
+        currentRotation.setType(GameMessage.TypeOfMessage.ROTATION);
     }
 
     @Override
@@ -399,21 +399,21 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
 
 
     private void tryToUseNonInstantSkill(int x, int y) {
-        if (currentSkill != null && SkillHandler.SkillList.isNonInstantSkill(currentSkill.skill)) {
-            currentSkill.destX = x;
-            currentSkill.destY = y;
+        if (currentSkill != null && SkillHandler.SkillList.isNonInstantSkill(currentSkill.getSkill())) {
+            currentSkill.setDestX(x);
+            currentSkill.setDestY(y);
         }
     }
 
     private void tryToskill(int x, int y, SkillHandler.SkillList skill) {
         if (currentSkill == null) {
             currentSkill = new GameMessage();
-            currentSkill.destX = -1;
+            currentSkill.setDestX(-1);
         }
-        currentSkill.srcX = x;
-        currentSkill.srcY = y;
-        currentSkill.skill = skill;
-        currentSkill.type = GameMessage.TypeOfMessage.SKILL;
+        currentSkill.setSrcX(x);
+        currentSkill.setSrcY(y);
+        currentSkill.setSkill(skill);
+        currentSkill.setType(GameMessage.TypeOfMessage.SKILL);
     }
 
     @Override
@@ -426,7 +426,7 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
         currentSkill = null;
         // add message in chat informing about skill being used
         chatHistory += "\n " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS)
-                + " [Game Master] I GUESS YOU'D LIKE TO KNOW THAT " + player + " USED " + position.skill.toString() + "!";
+                + " [Game Master] I GUESS YOU'D LIKE TO KNOW THAT " + player + " USED " + position.getSkill().toString() + "!";
     }
 
     //------------------------------------------
@@ -434,8 +434,8 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
     private void saveMessageFromTextField(String text) {
         if (!text.isEmpty()) {
             currentChat = new GameMessage();
-            currentChat.type = GameMessage.TypeOfMessage.CHAT;
-            currentChat.chatMessage = text;
+            currentChat.setType(GameMessage.TypeOfMessage.CHAT);
+            currentChat.setChatMessage(text);
         }
     }
 
@@ -448,7 +448,7 @@ public class GUIHandler extends Application implements PlayerHandlerInterface, R
     public void sendChatMessage(GameMessage message, String player) {
         currentChat = null;
         // after a new line: "TIME [PLAYER NAME] MESSAGE"
-        chatHistory += "\n " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS) + " [" + player + "] " + message.chatMessage;
+        chatHistory += "\n " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS) + " [" + player + "] " + message.getChatMessage();
     }
 
     //------------------------------------------

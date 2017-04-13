@@ -20,12 +20,12 @@ public class MoveHandler {
         if (!isMoveValid(move)) {
             return false;
         }
-        Tile src = tiles[move.srcY][move.srcX];
-        Tile dest = tiles[move.destY][move.destX];
+        Tile src = tiles[move.getSrcY()][move.getSrcX()];
+        Tile dest = tiles[move.getDestY()][move.getDestX()];
         dest.setMonster(src.getMonster());
         src.removeMonster();
         activePlayer.setIfCanMove(false);
-        tiles[move.destY][move.destX].getMonster().setHasted(false);
+        tiles[move.getDestY()][move.getDestX()].getMonster().setHasted(false);
         return true;
     }
 
@@ -33,17 +33,17 @@ public class MoveHandler {
         //MOVING PIECE: check if previously clicked tile has a monster and if player tries to move his own monster
         //and if he moved already and if there is no stone on target tile and if the target tile is within range of this monster
         //plus quite complicated check to avoid "jumping" over stones and monsters
-        return tiles[move.srcY][move.srcX].getMonster() != null
-                && tiles[move.srcY][move.srcX].getMonster().getPlayer() == activePlayer
+        return tiles[move.getSrcY()][move.getSrcX()].getMonster() != null
+                && tiles[move.getSrcY()][move.getSrcX()].getMonster().getPlayer() == activePlayer
                 && activePlayer.canMove()
-                && tiles[move.destY][move.destX].isOccupied() == false
+                && tiles[move.getDestY()][move.getDestX()].isOccupied() == false
                 && checkIfDistanceIsValid(move)
                 && checkIfSpecificMoveIsValid(move);
     }
 
     private boolean checkIfDistanceIsValid(GameMessage move) {
-        Tile src = tiles[move.srcY][move.srcX];
-        Tile dest = tiles[move.destY][move.destX];
+        Tile src = tiles[move.getSrcY()][move.getSrcX()];
+        Tile dest = tiles[move.getDestY()][move.getDestX()];
 
         if (activePlayer.isParalysed() && src.getMonster().isHasted()) {
             return abs(dest.getX() - src.getX()) + abs(dest.getY() - src.getY()) <= 2;
@@ -58,10 +58,10 @@ public class MoveHandler {
     }
 
     private boolean checkIfSpecificMoveIsValid(GameMessage move) {
-        int x = move.destX;
-        int y = move.destY;
-        int a = move.srcX;
-        int b = move.srcY;
+        int x = move.getDestX();
+        int y = move.getDestY();
+        int a = move.getSrcX();
+        int b = move.getSrcY();
 
         //if monster can jump, nothing here is important
         if (tiles[b][a].getMonster().getPossibleSkills().contains(SkillHandler.SkillList.JUMPING4)) {

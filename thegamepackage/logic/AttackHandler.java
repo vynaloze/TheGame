@@ -18,7 +18,7 @@ public class AttackHandler {
     }
 
     public void attack(GameMessage position) {
-        Tile tile = tiles[position.srcY][position.srcX];
+        Tile tile = tiles[position.getSrcY()][position.getSrcX()];
 
         for (Coordinates coordinates : tile.getMonster().getAttackedTiles()) {
             int x = tile.getX() + coordinates.getX();

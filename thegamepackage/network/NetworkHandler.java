@@ -76,7 +76,7 @@ public class NetworkHandler implements PlayerHandlerInterface {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        if (lastMessageReceived.type == GameMessage.TypeOfMessage.MOVE) {
+        if (lastMessageReceived.getType() == GameMessage.TypeOfMessage.MOVE) {
             return lastMessageReceived;
         }
         return null;
@@ -97,7 +97,7 @@ public class NetworkHandler implements PlayerHandlerInterface {
 
     @Override
     public GameMessage getAttack() {
-        if (lastMessageReceived.type == GameMessage.TypeOfMessage.ATTACK) {
+        if (lastMessageReceived.getType() == GameMessage.TypeOfMessage.ATTACK) {
             return lastMessageReceived;
         }
         return null;
@@ -117,7 +117,7 @@ public class NetworkHandler implements PlayerHandlerInterface {
 
     @Override
     public GameMessage getSkill() {
-        if (lastMessageReceived.type == GameMessage.TypeOfMessage.SKILL) {
+        if (lastMessageReceived.getType() == GameMessage.TypeOfMessage.SKILL) {
             return lastMessageReceived;
         }
         return null;
@@ -137,7 +137,7 @@ public class NetworkHandler implements PlayerHandlerInterface {
 
     @Override
     public GameMessage getRotation() {
-        if (lastMessageReceived.type == GameMessage.TypeOfMessage.ROTATION) {
+        if (lastMessageReceived.getType() == GameMessage.TypeOfMessage.ROTATION) {
             return lastMessageReceived;
         }
         return null;
@@ -157,7 +157,7 @@ public class NetworkHandler implements PlayerHandlerInterface {
 
     @Override
     public GameMessage isTurnOver() {
-        if (lastMessageReceived.type == GameMessage.TypeOfMessage.ENDTURN) {
+        if (lastMessageReceived.getType() == GameMessage.TypeOfMessage.ENDTURN) {
             return lastMessageReceived;
         }
         return null;
@@ -177,7 +177,7 @@ public class NetworkHandler implements PlayerHandlerInterface {
 
     @Override
     public GameMessage getChatMessage() {
-        if (lastMessageReceived.type == GameMessage.TypeOfMessage.CHAT) {
+        if (lastMessageReceived.getType() == GameMessage.TypeOfMessage.CHAT) {
             return lastMessageReceived;
         }
         return null;

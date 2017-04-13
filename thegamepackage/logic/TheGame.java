@@ -190,13 +190,13 @@ public class TheGame implements Runnable {
 
             GameMessage skill = activePlayerHandler.getSkill();
             if (skill != null) {
-                skillHandler.addActiveTile(board[skill.srcY][skill.srcX]);
+                skillHandler.addActiveTile(board[skill.getSrcY()][skill.getSrcX()]);
                 // no need to validate, too. However...
                 // there's a problem with stone/field creating/removing: we have to wait until
                 // player clicks on the target tile, where he wants to create (or remove) sth
-                if (SkillHandler.SkillList.isNonInstantSkill(skill.skill)) {
-                    if (skill.destX != -1) {
-                        skillHandler.useSkill(skill.skill, skill.destX, skill.destY);
+                if (SkillHandler.SkillList.isNonInstantSkill(skill.getSkill())) {
+                    if (skill.getDestX() != -1) {
+                        skillHandler.useSkill(skill.getSkill(), skill.getDestX(), skill.getDestY());
                         playerOneHandler.performedSkill(skill, activePlayer.getName());
                         playerTwoHandler.performedSkill(skill, activePlayer.getName());
                     }
@@ -204,7 +204,7 @@ public class TheGame implements Runnable {
                 // if there is one of other "simple" skills, there are no problems
                 // (unnecessary parameters x & y, but I'm too lazy to deal with it)
                 else {
-                    skillHandler.useSkill(skill.skill, -1, -1);
+                    skillHandler.useSkill(skill.getSkill(), -1, -1);
                     playerOneHandler.performedSkill(skill, activePlayer.getName());
                     playerTwoHandler.performedSkill(skill, activePlayer.getName());
                 }
@@ -212,7 +212,7 @@ public class TheGame implements Runnable {
 
             GameMessage rotation = activePlayerHandler.getRotation();
             if (rotation != null) {
-                board[rotation.srcY][rotation.srcX].getMonster().rotate(rotation.rotation);
+                board[rotation.getSrcY()][rotation.getSrcX()].getMonster().rotate(rotation.getRotation());
                 playerOneHandler.performedRotation(rotation);
                 playerTwoHandler.performedRotation(rotation);
                 skillHandler.updateProtectedMonsters();
